@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="former">
+    <xacro:arg name="prefix" default=""/>
+
+    <xacro:include filename="$(find former_description)/urdf/common/inertia_macro.urdf.xacro"/>
+    <xacro:include filename="$(find former_description)/urdf/common/insert_transmission.urdf.xacro"/>
+    <xacro:include filename="$(find former_description)/urdf/former.urdf.xacro"/>
+
+    <xacro:insert_robot prefix="$(arg prefix)"/>
+</robot>
