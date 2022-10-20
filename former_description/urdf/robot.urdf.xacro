@@ -5,6 +5,7 @@
     <xacro:include filename="$(find former_description)/urdf/common/inertia_macro.urdf.xacro"/>
     <xacro:include filename="$(find former_description)/urdf/common/insert_transmission.urdf.xacro"/>
     <xacro:include filename="$(find former_description)/urdf/former.urdf.xacro"/>
+    <xacro:include filename="$(find realsense2_description)/urdf/_d435i.urdf.xacro"/>
 
     <xacro:insert_robot prefix="$(arg prefix)"/>
 </robot>

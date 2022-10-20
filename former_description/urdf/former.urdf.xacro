@@ -5,8 +5,8 @@
         <xacro:property name="wheel_radius" value="0.159"/>
         <xacro:property name="wheel_seperation" value="0.4"/>
 
-        <link name="base_footprint"/>
-        <link name="base_link">
+        <link name="${prefix}base_footprint"/>
+        <link name="${prefix}base_link">
             <visual>
                 <origin xyz="0 0 0" rpy="0 0 0"/>
                 <geometry>
@@ -26,13 +26,39 @@
             </inertial>
         </link>
 
-        <joint name="base_link_fixed_joint" type="fixed">
-            <parent link="base_footprint"/>
-            <child link="base_link"/>
-            <origin xyz="0 0 0.08" rpy="0 0 0"/>
+        <joint name="${prefix}base_link_fixed_joint" type="fixed">
+            <parent link="${prefix}base_footprint"/>
+            <child link="${prefix}base_link"/>
+            <origin xyz="0 0 ${0.169/2}" rpy="0 0 0"/>
         </joint>
 
-        <!-- <xacro:macro name="insert_wheel" params="prefix dir">
+        <xacro:macro name="insert_wheel" params="parent prefix dir">
+            <link name="${prefix}_wheel_mount">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/visual/main_wheel_mount.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/collision/main_wheel_mount.stl" scale="1 1 1"/>
+                    </geometry>
+                </collision>
+                <inertial>
+                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
+                    <mass value="67.084"/>
+                    <inertia ixx="1.067955" ixy="0.010608" ixz="-0.044928" iyy="2.497383" iyz="-0.000028" izz="3.217104"/>
+                </inertial>
+            </link>
+
+            <joint name="${prefix}_wheel_mount_fixed" type="fixed">
+                <parent link="${parent}"/>
+                <child link="${prefix}_wheel_mount"/>
+                <origin xyz="0 ${dir*0.0711} 0" rpy="0 0 0"/>
+            </joint>
+
             <link name="${prefix}_wheel">
                 <visual>
                     <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
@@ -41,28 +67,188 @@
                     </geometry>
                 </visual>
                 <collision>
-                    <origin xyz="0 ${dir*-0.011} 0.0" rpy="${pi/2} 0 0"/>
+                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
                     <geometry>
-                        <cylinder radius="0.08" length="0.05"/>
+                        <!-- <cylinder radius="0.08" length="0.05"/> -->
+                        <mesh filename="package://former_description/meshes/collision/main_wheel.stl" scale="1 1 1"/>
                     </geometry>
                 </collision>
                 <inertial>
-                    <origin xyz="0 ${dir*-0.011} 0.0" rpy="${pi/2} 0 0"/>
+                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
                     <mass value="0.323442"/>
                     <xacro:cylinder_inertia m="0.323442" r="0.08" h="0.05"/>
                 </inertial>
             </link>
 
             <joint name="${prefix}_wheel_joint" type="continuous">
-                <parent link="base_link"/>
+                <parent link="${prefix}_wheel_mount"/>
                 <child link="${prefix}_wheel"/>
                 <axis xyz="0 1 0"/>
-                <origin xyz="0 ${dir*0.246} 0" rpy="0 0 0"/>
+                <origin xyz="0 ${dir*0.051} 0" rpy="0 0 0"/>
             </joint>
             <xacro:insert_velocity_transmission name="${prefix}_wheel_joint"/>
         </xacro:macro>
 
-        <xacro:insert_wheel prefix="l" dir="1"/>
-        <xacro:insert_wheel prefix="r" dir="-1"/> -->
+        <xacro:insert_wheel parent="${prefix}base_link" prefix="${prefix}l" dir="1" />
+        <xacro:insert_wheel parent="${prefix}base_link" prefix="${prefix}r" dir="-1" />
+
+
+        <xacro:macro name="insert_front_caster_wheel" params="parent prefix1 prefix2 dir offset_x offset_y">
+            <link name="${prefix1}_${prefix2}_caster_mount">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/visual/caster_mount.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/collision/caster_mount.stl" scale="1 1 1"/>
+                    </geometry>
+                </collision>
+                <inertial>
+                    <origin xyz="0.000 0.000 -0.007" rpy="0 0 0"/>
+                    <mass value="0.042084"/>
+                    <inertia ixx="0.000030" ixy="0.0" ixz="0.0" iyy="0.000030" iyz="0.0" izz="0.000059"/>
+                </inertial>
+            </link>
+
+            <joint name="${prefix1}_${prefix2}_caster_mount_fixed_joint" type="fixed">
+                <parent link="${parent}"/>
+                <child link="${prefix1}_${prefix2}_caster_mount"/>
+                <origin xyz="${offset_x} ${dir*offset_y} -0.0015" rpy="0 0 0"/>
+            </joint>
+
+            <link name="${prefix1}_${prefix2}_caster_rotate">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/visual/caster_rotate.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/collision/caster_rotate.stl" scale="1 1 1"/>
+                    </geometry>
+                </collision>
+                <inertial>
+                    <origin xyz="-0.016 0.000 -0.034" rpy="0 0 0"/>
+                    <mass value="0.106803"/>
+                    <inertia ixx="0.000088" ixy="0.0" ixz="-0.000017" iyy="0.000085" iyz="0.0" izz="0.000093"/>
+                </inertial>
+            </link>
+
+            <joint name="${prefix1}_${prefix2}_caster_rotate_joint" type="continuous">
+                <parent link="${prefix1}_${prefix2}_caster_mount"/>
+                <child link="${prefix1}_${prefix2}_caster_rotate"/>
+                <axis xyz="0 0 1"/>
+                <origin xyz="0 0 -0.010" rpy="0 0 0"/>
+            </joint>
+
+            <link name="${prefix1}_${prefix2}_caster_wheel">
+                <visual>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/visual/caster_wheel.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/collision/caster_wheel.stl" scale="1 1 1"/>
+                        <!-- <cylinder radius="0.0375" length="0.023"/> -->
+                    </geometry>
+                </collision>
+                <inertial>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <mass value="0.032222"/>
+                    <xacro:cylinder_inertia m="0.032222" r="0.0375" h="0.023"/>
+                </inertial>
+            </link>
+
+            <joint name="${prefix1}_${prefix2}_caster_wheel_joint" type="continuous">
+                <parent link="${prefix1}_${prefix2}_caster_rotate"/>
+                <child link="${prefix1}_${prefix2}_caster_wheel"/>
+                <axis xyz="0 1 0"/>
+                <origin xyz="-0.0235 0 -0.0415" rpy="0 0 0"/>
+            </joint>
+        </xacro:macro>
+
+        <xacro:insert_front_caster_wheel parent="${prefix}base_link" prefix1="${prefix}f" prefix2="l" dir="1" offset_x="0.125" offset_y="0.087"/>
+        <xacro:insert_front_caster_wheel parent="${prefix}base_link" prefix1="${prefix}f" prefix2="r" dir="-1" offset_x="0.125" offset_y="0.087"/>
+        <xacro:insert_front_caster_wheel parent="${prefix}base_link" prefix1="${prefix}r" prefix2="l" dir="1" offset_x="-0.128" offset_y="0.099"/>
+        <xacro:insert_front_caster_wheel parent="${prefix}base_link" prefix1="${prefix}r" prefix2="r" dir="-1" offset_x="-0.128" offset_y="0.099"/>
+
+        <xacro:macro name="insert_sonar_sensor" params="parent prefix dir">
+            <link name="${prefix}_sonar_sensor">
+                <visual>
+                        <origin xyz="0 0 0" rpy="0 0 0"/>
+                        <geometry>
+                            <mesh filename="package://former_description/meshes/visual/sonar_sensor.dae" scale="1 1 1"/>
+                        </geometry>
+                    </visual>
+                    <collision>
+                        <origin xyz="0 0 0" rpy="0 0 0"/>
+                        <geometry>
+                            <mesh filename="package://former_description/meshes/collision/sonar_sensor.stl" scale="1 1 1"/>
+                        </geometry>
+                    </collision>
+                    <inertial>
+                        <origin xyz="0 0 0" rpy="0 0 0"/>
+                        <mass value="0.032222"/>
+                        <xacro:cylinder_inertia m="0.032222" r="0.0375" h="0.023"/>
+                    </inertial>
+            </link>
+
+            <joint name="${prefix}_sonar_sensor_fixed" type="fixed">
+                <parent link="${parent}"/>
+                <child link="${prefix}_sonar_sensor"/>
+                <origin xyz="0.184 ${dir*0.0968} 0.084" rpy="0 0 0"/>
+            </joint>
+        </xacro:macro>
+
+        <xacro:insert_sonar_sensor parent="${prefix}base_link" prefix="${prefix}l" dir="1" />
+        <xacro:insert_sonar_sensor parent="${prefix}base_link" prefix="${prefix}r" dir="-1" />
+
+
+        <link name="${prefix}lidar_mount">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://former_description/meshes/visual/sick_tim5_lidar.dae" scale="1 1 1"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://former_description/meshes/collision/sick_tim5_lidar.stl" scale="1 1 1"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0.010 0.000 0.070" rpy="0 0 0"/>
+                <mass value="67.084"/>
+                <inertia ixx="1.067955" ixy="0.010608" ixz="-0.044928" iyy="2.497383" iyz="-0.000028" izz="3.217104"/>
+            </inertial>
+        </link>
+
+        <joint name="${prefix}lidar_mount_fixed_joint" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}lidar_mount"/>
+            <origin xyz="0.160 0 0.2275" rpy="${pi} 0 0"/>
+        </joint>
+
+        <link name="${prefix}laser_link"/>
+
+        <joint name="${prefix}laser_link_fixed_joint" type="fixed">
+            <parent link="${prefix}lidar_mount"/>
+            <child link="${prefix}laser_link"/>
+            <origin xyz="0 0 0.060" rpy="${pi} 0 0"/>
+        </joint>
+
+        <xacro:sensor_d435i parent="${prefix}base_link" name="${prefix}camera" use_nominal_extrinsics="false">
+            <origin xyz="0.1777 0 0.06715" rpy="0 ${-15*pi/180} 0"/>
+        </xacro:sensor_d435i>
     </xacro:macro>
 </robot>
