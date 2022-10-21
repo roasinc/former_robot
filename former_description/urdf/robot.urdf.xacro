@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="former">
+    <xacro:arg name="use_gazebo_sim" default="false"/>
+
+    <xacro:include filename="$(find former_description)/urdf/common/insert_inertia.urdf.xacro"/>
+    <xacro:include filename="$(find former_description)/urdf/former.urdf.xacro"/>
+    <xacro:include filename="$(find former_description)/urdf/former_gazebo.urdf.xacro"/>
+    <xacro:include filename="$(find former_description)/urdf/former_ros2_control.urdf.xacro"/>
+    <xacro:include filename="$(find realsense2_description)/urdf/_d435i.urdf.xacro"/>
+
+    <xacro:insert_robot prefix=""/>
+    <xacro:insert_ros2_control name="former_system" use_gazebo_sim="$(arg use_gazebo_sim)"/>
+</robot>

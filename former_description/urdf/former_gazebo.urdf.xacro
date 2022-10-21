@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <gazebo>
+        <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+            <robot_param>robot_description</robot_param>
+            <parameters>$(find former_bringup)/config/controllers_former.yaml</parameters>
+        </plugin>
+
+        <plugin filename="ignition-gazebo-sensors-system" name="ignition::gazebo::systems::Sensors">
+            <render_engine>ogre2</render_engine>
+        </plugin>
+    </gazebo>
+
+    <gazebo reference="l_wheel">
+        <mu1>200</mu1>
+        <mu2>200</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="r_wheel">
+        <mu1>200</mu1>
+        <mu2>200</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="f_l_caster_wheel">
+        <mu1>1</mu1>
+        <mu2>1</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="f_r_caster_wheel">
+        <mu1>1</mu1>
+        <mu2>1</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="r_l_caster_wheel">
+        <mu1>1</mu1>
+        <mu2>1</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="r_r_caster_wheel">
+        <mu1>1</mu1>
+        <mu2>1</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="base_footprint">
+        <self_collide>0</self_collide>
+    </gazebo>
+
+    <gazebo reference="laser_link">
+        <sensor name='laser_sensor' type='gpu_lidar'>
+            <topic>front_scan</topic>
+            <update_rate>15</update_rate>
+            <alwaysOn>1</alwaysOn>
+            <visualize>true</visualize>
+
+            <lidar>
+                <scan>
+                    <horizontal>
+                        <samples>640</samples>
+                        <resolution>1</resolution>
+                        <min_angle>${-110/180*pi}</min_angle>
+                        <max_angle>${110/180*pi}</max_angle>
+                    </horizontal>
+                    <vertical>
+                        <samples>1</samples>
+                        <resolution>0.01</resolution>
+                        <min_angle>0</min_angle>
+                        <max_angle>0</max_angle>
+                    </vertical>
+                </scan>
+                <range>
+                    <min>0.08</min>
+                    <max>15.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.02</stddev>
+                </noise>
+            </lidar>
+        </sensor>
+    </gazebo>
+</robot>
