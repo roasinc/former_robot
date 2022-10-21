@@ -1,0 +1,57 @@
+
+joint_state_controller:
+  type: joint_state_controller/JointStateController
+  publish_rate: 50
+
+base_controller:
+  type        : "diff_drive_controller/DiffDriveController"
+  left_wheel  : ['l_wheel_joint']
+  right_wheel : ['r_wheel_joint']
+  publish_rate: 50.0
+  pose_covariance_diagonal : [0.00001, 0.00001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
+  twist_covariance_diagonal: [0.0001, 0.0001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
+  enable_odom_tf: true
+
+  # Wheel separation and diameter. These are both optional.
+  # diff_drive_controller will attempt to read either one or both from the
+  # URDF if not specified as a parameter
+  wheel_separation : 0.3
+  wheels_per_side: 1
+  wheel_radius : 0.0845
+
+  # Wheel separation and radius multipliers
+  wheel_separation_multiplier: 1.0 # default: 1.0
+  wheel_radius_multiplier    : 1.0 # default: 1.0
+
+  # Velocity commands timeout [s], default 0.5
+  open_loop: false
+  cmd_vel_timeout: 0.5
+  publish_cmd: true
+
+  # Base frame_id
+  base_frame_id: base_footprint #default: base_link
+  odom_frame_id: odom
+
+  # Velocity and acceleration limits
+  # Whenever a min_* is unspecified, default to -max_*
+  linear:
+    x:
+      has_velocity_limits      : true
+      max_velocity             : 1.5 # m/s
+      # min_velocity             : 2.0 # m/s
+      has_acceleration_limits  : true
+      max_acceleration         : 1.2  # m/s^2
+      # min_acceleration         : -1.2 # m/s^2
+      has_jerk_limits          : false
+      # max_jerk                 : 0.0
+      # min_jerk                 : 0.0
+
+  angular:
+    z:
+      has_velocity_limits      : true
+      max_velocity             : 1.5  # rad/s
+      has_acceleration_limits  : true
+      max_acceleration         : 1.8  # rad/s^2
+      has_jerk_limits          : false
+      # max_jerk                 : 0.0
+      # min_jerk                 : 0.0

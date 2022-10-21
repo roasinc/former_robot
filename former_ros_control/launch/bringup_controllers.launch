@@ -1,0 +1,7 @@
+<launch>
+        <rosparam file="$(find former_ros_control)/config/controllers.yaml" command="load" />
+        <node name="controller_manager" pkg="controller_manager" type="spawner" respawn="true"
+                        output="screen" args="  joint_state_controller
+                                                base_controller">
+        </node>
+</launch>
