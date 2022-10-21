@@ -5,7 +5,7 @@
   <description>The former_description package</description>
 
   <maintainer email="bkahn@roas.co.kr">byeongkyu</maintainer>
-  <license>MIT</license>
+  <license>BSD</license>
   <url type="website">http://roas.co.kr</url>
 
   <buildtool_depend>catkin</buildtool_depend>

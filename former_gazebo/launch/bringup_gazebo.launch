@@ -1,0 +1,12 @@
+<launch>
+    <env name="GAZEBO_RESOURCE_PATH" value="$(find former_gazebo)"/>
+    <env name="QT_AUTO_SCREEN_SCALE_FACTOR" value="0"/>
+    <arg name="world_name" default="empty_world"/>
+
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+        <arg name="use_sim_time" value="true" />
+        <arg name="verbose" value="true"/>
+        <arg name="physics" value="ode"/>
+        <arg name="world_name" value="worlds/$(arg world_name).world"/>
+    </include>
+</launch>

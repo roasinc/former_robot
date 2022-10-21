@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>former_gazebo</name>
+  <version>0.0.0</version>
+  <description>The former_gazebo package</description>
+
+  <maintainer email="bkahn@roas.co.kr">byeongkyu</maintainer>
+  <license>MIT</license>
+  <url type="website">http://roas.co.kr</url>
+
+  <buildtool_depend>catkin</buildtool_depend>
+  <exec_depend>gazebo_ros</exec_depend>
+  <exec_depend>former_description</exec_depend>
+
+  <export>
+  </export>
+</package>
