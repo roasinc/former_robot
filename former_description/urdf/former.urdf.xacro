@@ -20,9 +20,9 @@
                 </geometry>
             </collision>
             <inertial>
-                <origin xyz="0.010 0.000 0.070" rpy="0 0 0"/>
-                <mass value="67.084"/>
-                <inertia ixx="1.067955" ixy="0.010608" ixz="-0.044928" iyy="2.497383" iyz="-0.000028" izz="3.217104"/>
+                <origin xyz="0.000 0.000 0.096" rpy="0 0 0"/>
+                <mass value="32.571233"/>
+                <inertia ixx="0.639569" ixy="0.000014" ixz="0.000423" iyy="0.635798" iyz="0.000003" izz="0.798308"/>
             </inertial>
         </link>
 
@@ -47,9 +47,9 @@
                     </geometry>
                 </collision>
                 <inertial>
-                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
-                    <mass value="67.084"/>
-                    <inertia ixx="1.067955" ixy="0.010608" ixz="-0.044928" iyy="2.497383" iyz="-0.000028" izz="3.217104"/>
+                    <origin xyz="0.026 0.000 0.000" rpy="0 0 ${dir*pi/2}"/>
+                    <mass value="0.007885"/>
+                    <inertia ixx="0.000000" ixy="0.000000" ixz="0.000000" iyy="0.000002" iyz="0.000000" izz="0.000002"/>
                 </inertial>
             </link>
 
@@ -74,9 +74,10 @@
                     </geometry>
                 </collision>
                 <inertial>
-                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
-                    <mass value="0.323442"/>
-                    <xacro:cylinder_inertia m="0.323442" r="0.08" h="0.05"/>
+                    <origin xyz="0.000 ${dir*0.031} 0.000" rpy="0 0 ${dir*pi/2}"/>
+                    <mass value="0.843041"/>
+                    <!-- <xacro:cylinder_inertia m="0.323442" r="0.08" h="0.05"/> -->
+                    <inertia ixx="0.002632" ixy="0.000000" ixz="0.000000" iyy="0.001536" iyz="0.000000" izz="0.001536"/>
                 </inertial>
             </link>
 
@@ -108,9 +109,9 @@
                     </geometry>
                 </collision>
                 <inertial>
-                    <origin xyz="0.000 0.000 -0.007" rpy="0 0 0"/>
-                    <mass value="0.042084"/>
-                    <inertia ixx="0.000030" ixy="0.0" ixz="0.0" iyy="0.000030" iyz="0.0" izz="0.000059"/>
+                    <origin xyz="0.000 0.000 -0.004" rpy="0 0 0"/>
+                    <mass value="0.019629"/>
+                    <inertia ixx="0.000006" ixy="0.000000" ixz="0.000000" iyy="0.000005" iyz="0.000000" izz="0.000010"/>
                 </inertial>
             </link>
 
@@ -134,9 +135,9 @@
                     </geometry>
                 </collision>
                 <inertial>
-                    <origin xyz="-0.016 0.000 -0.034" rpy="0 0 0"/>
-                    <mass value="0.106803"/>
-                    <inertia ixx="0.000088" ixy="0.0" ixz="-0.000017" iyy="0.000085" iyz="0.0" izz="0.000093"/>
+                    <origin xyz="-0.012 0.000 -0.021" rpy="0 0 0"/>
+                    <mass value="0.060591"/>
+                    <inertia ixx="0.000020" ixy="0.000000" ixz="-0.000004" iyy="0.000022" iyz="0.000000" izz="0.000020"/>
                 </inertial>
             </link>
 
@@ -162,9 +163,10 @@
                     </geometry>
                 </collision>
                 <inertial>
-                    <origin xyz="0 0 0" rpy="0 0 0"/>
-                    <mass value="0.032222"/>
-                    <xacro:cylinder_inertia m="0.032222" r="0.0375" h="0.023"/>
+                    <origin xyz="0.000 0.000 0.000" rpy="0 0 0"/>
+                    <mass value="0.051842"/>
+                    <!-- <xacro:cylinder_inertia m="0.032222" r="0.0375" h="0.023"/> -->
+                    <inertia ixx="0.000013" ixy="0.000000" ixz="0.000000" iyy="0.000021" iyz="0.000000" izz="0.000013"/>
                 </inertial>
             </link>
 
@@ -196,9 +198,9 @@
                         </geometry>
                     </collision>
                     <inertial>
-                        <origin xyz="0 0 0" rpy="0 0 0"/>
-                        <mass value="0.032222"/>
-                        <xacro:cylinder_inertia m="0.032222" r="0.0375" h="0.023"/>
+                        <origin xyz="0.004 0.002 0.000" rpy="0 0 0"/>
+                        <mass value="0.009290"/>
+                        <inertia ixx="0.000001" ixy="0.000000" ixz="0.000000" iyy="0.000001" iyz="0.000000" izz="0.000001"/>
                     </inertial>
             </link>
 
@@ -227,9 +229,9 @@
                 </geometry>
             </collision>
             <inertial>
-                <origin xyz="0.010 0.000 0.070" rpy="0 0 0"/>
-                <mass value="67.084"/>
-                <inertia ixx="1.067955" ixy="0.010608" ixz="-0.044928" iyy="2.497383" iyz="-0.000028" izz="3.217104"/>
+                <origin xyz="-0.002 0.000 0.036" rpy="0 0 0"/>
+                <mass value="0.180090"/>
+                <inertia ixx="0.000139" ixy="0.000000" ixz="0.000002" iyy="0.000129" iyz="0.000000" izz="0.000094"/>
             </inertial>
         </link>
 

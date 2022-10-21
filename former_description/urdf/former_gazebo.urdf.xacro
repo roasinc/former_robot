@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <gazebo>
+        <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
+            <robotNamespace></robotNamespace>
+            <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
+            <controlPeriod>0.001</controlPeriod>
+            <legacyModeNS>false</legacyModeNS>
+        </plugin>
+    </gazebo>
+
+    <gazebo reference="l_wheel">
+        <mu1>200</mu1>
+        <mu2>200</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="r_wheel">
+        <mu1>200</mu1>
+        <mu2>200</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="f_l_caster_wheel">
+        <mu1>1</mu1>
+        <mu2>1</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="f_r_caster_wheel">
+        <mu1>1</mu1>
+        <mu2>1</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="r_l_caster_wheel">
+        <mu1>1</mu1>
+        <mu2>1</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="r_r_caster_wheel">
+        <mu1>1</mu1>
+        <mu2>1</mu2>
+        <kp>10000000.0</kp>
+        <kd>1.0</kd>
+        <!-- <minDepth>0.001</minDepth> -->
+    </gazebo>
+
+    <gazebo reference="laser_link">
+        <sensor type="gpu_ray" name="laser_sensor">
+            <pose>0 0 0 0 0 0</pose>
+            <visualize>true</visualize>
+            <update_rate>15</update_rate>
+            <ray>
+                <scan>
+                    <horizontal>
+                        <samples>576</samples>
+                        <resolution>1</resolution>
+                        <min_angle>${-110/180*pi}</min_angle>
+                        <max_angle>${110/180*pi}</max_angle>
+                    </horizontal>
+                </scan>
+                <range>
+                    <min>0.10</min>
+                    <max>15.0</max>
+                    <resolution>0.01</resolution>
+                </range>
+                <noise>
+                    <type>gaussian</type>
+                    <mean>0.0</mean>
+                    <stddev>0.02</stddev>
+                </noise>
+            </ray>
+            <plugin name="gazebo_ros_gpu_laser_plugin" filename="libgazebo_ros_gpu_laser.so">
+                <topicName>scan</topicName>
+                <frameName>laser_link</frameName>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <gazebo reference="camera_link">
+        <sensor name="camera" type="depth">
+            <update_rate>30</update_rate>
+            <visualize>true</visualize>
+            <camera>
+                <horizontal_fov>1.047198</horizontal_fov>
+                <image>
+                    <width>640</width>
+                    <height>480</height>
+                    <format>R8G8B8</format>
+                </image>
+                <clip>
+                    <near>0.05</near>
+                    <far>3</far>
+                </clip>
+            </camera>
+            <plugin name="camera_controller" filename="libgazebo_ros_openni_kinect.so">
+                <baseline>0.2</baseline>
+                <alwaysOn>true</alwaysOn>
+                <updateRate>1.0</updateRate>
+                <cameraName>camera</cameraName>
+                <imageTopicName>/camera/color/image_raw</imageTopicName>
+                <cameraInfoTopicName>/camera/color/camera_info</cameraInfoTopicName>
+                <depthImageTopicName>/camera/depth/image_raw</depthImageTopicName>
+                <depthImageInfoTopicName>/camera/depth/camera_info</depthImageInfoTopicName>
+                <pointCloudTopicName>/camera/depth/points</pointCloudTopicName>
+                <frameName>camera_link</frameName>
+                <pointCloudCutoff>0.5</pointCloudCutoff>
+                <pointCloudCutoffMax>3.0</pointCloudCutoffMax>
+                <distortionK1>0.00000001</distortionK1>
+                <distortionK2>0.00000001</distortionK2>
+                <distortionK3>0.00000001</distortionK3>
+                <distortionT1>0.00000001</distortionT1>
+                <distortionT2>0.00000001</distortionT2>
+                <CxPrime>0</CxPrime>
+                <Cx>0</Cx>
+                <Cy>0</Cy>
+                <focalLength>0</focalLength>
+                <hackBaseline>0</hackBaseline>
+            </plugin>
+        </sensor>
+    </gazebo>
+
+    <xacro:macro name="insert_range_sensor" params="prefix">
+        <gazebo reference="${prefix}_sonar_sensor">
+            <sensor type="ray" name="${prefix}_sonar_sensor">
+                <pose>0.01 0 0 0 0 0</pose>
+                <visualize>true</visualize>
+                <update_rate>10</update_rate>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>10</samples>
+                            <resolution>1</resolution>
+                            <min_angle>${-5*pi/180}</min_angle>
+                            <max_angle>${5*pi/180}</max_angle>
+                        </horizontal>
+                        <vertical>
+                            <samples>10</samples>
+                            <resolution>1</resolution>
+                            <min_angle>${-5*pi/180}</min_angle>
+                            <max_angle>${5*pi/180}</max_angle>
+                        </vertical>
+                    </scan>
+                    <range>
+                        <min>0.02</min>
+                        <max>3.0</max>
+                        <resolution>0.001</resolution>
+                    </range>
+                </ray>
+                <plugin filename="libgazebo_ros_range.so" name="gazebo_ros_range">
+                    <gaussianNoise>0.005</gaussianNoise>
+                    <alwaysOn>true</alwaysOn>
+                    <updateRate>50</updateRate>
+                    <topicName>${prefix}_sonar/range</topicName>
+                    <frameName>${prefix}_sonar_sensor</frameName>
+                    <radiation>ultrasonic</radiation>
+                    <fov>0.05</fov>
+                    <visualize>true</visualize>
+                </plugin>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
+
+    <xacro:insert_range_sensor prefix="l"/>
+    <xacro:insert_range_sensor prefix="r"/>
+</robot>

@@ -6,5 +6,5 @@
     <node pkg="robot_state_publisher" type="robot_state_publisher" name="robot_state_publisher"/>
     <node pkg="joint_state_publisher_gui" type="joint_state_publisher_gui" name="joint_state_publisher"/>
 
-    <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find robot_description)/rviz/view_robot.rviz" required="true"/>
+    <node pkg="rviz" type="rviz" name="rviz" output="screen" args="-d $(find former_description)/view_robot.rviz" required="true"/>
 </launch>
