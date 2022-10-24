@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
     <xacro:macro name="insert_robot" params="prefix">
 
-        <xacro:property name="wheel_radius" value="0.159"/>
+        <xacro:property name="wheel_radius" value="0.169"/>
         <xacro:property name="wheel_seperation" value="0.4"/>
 
         <link name="${prefix}base_footprint"/>
@@ -29,7 +29,7 @@
         <joint name="${prefix}base_link_fixed_joint" type="fixed">
             <parent link="${prefix}base_footprint"/>
             <child link="${prefix}base_link"/>
-            <origin xyz="0 0 ${0.169/2}" rpy="0 0 0"/>
+            <origin xyz="0 0 ${wheel_radius/2}" rpy="0 0 0"/>
         </joint>
 
         <xacro:macro name="insert_wheel" params="parent prefix dir">
@@ -67,19 +67,19 @@
                     </geometry>
                 </visual>
                 <collision>
-                    <origin xyz="0 ${dir*0.025} 0" rpy="${dir*pi/2} 0 0"/>
-                    <!-- <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/> -->
+                    <!-- <origin xyz="0 ${dir*0.025} 0" rpy="${dir*pi/2} 0 0"/> -->
+                    <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
                     <geometry>
-                        <cylinder radius="0.0845" length="0.05"/>
-                        <!-- <mesh filename="package://former_description/meshes/collision/main_wheel.stl" scale="1 1 1"/> -->
+                        <!-- <cylinder radius="0.0845" length="0.05"/> -->
+                        <mesh filename="package://former_description/meshes/collision/main_wheel.stl" scale="1 1 1"/>
                     </geometry>
                 </collision>
                 <inertial>
-                    <origin xyz="0 ${dir*0.025} 0" rpy="${dir*pi/2} 0 0"/>
-                    <!-- <origin xyz="0.000 ${dir*0.031} 0.000" rpy="0 0 0"/> -->
+                    <!-- <origin xyz="0 ${dir*0.025} 0" rpy="${dir*pi/2} 0 0"/> -->
+                    <origin xyz="0.000 ${dir*0.031} 0.000" rpy="0 0 0"/>
                     <mass value="0.843041"/>
-                    <xacro:cylinder_inertia m="0.843041" r="0.0845" h="0.05"/>
-                    <!-- <inertia ixx="0.002632" ixy="0.000000" ixz="0.000000" iyy="0.001536" iyz="0.000000" izz="0.001536"/> -->
+                    <!-- <xacro:cylinder_inertia m="0.843041" r="0.0845" h="0.05"/> -->
+                    <inertia ixx="0.002632" ixy="0.000000" ixz="0.000000" iyy="0.001536" iyz="0.000000" izz="0.001536"/>
                 </inertial>
             </link>
 
