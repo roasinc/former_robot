@@ -3,7 +3,7 @@
     <gazebo>
         <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
             <robot_param>robot_description</robot_param>
-            <parameters>$(find former_bringup)/config/controllers_former.yaml</parameters>
+            <parameters>$(find former_bringup)/config/controllers_former_gazebo.yaml</parameters>
         </plugin>
 
         <plugin filename="ignition-gazebo-sensors-system" name="ignition::gazebo::systems::Sensors">
@@ -64,8 +64,8 @@
     </gazebo>
 
     <gazebo reference="laser_link">
-        <sensor name='laser_sensor' type='gpu_lidar'>
-            <topic>front_scan</topic>
+        <sensor name="laser_link" type="gpu_lidar">
+            <topic>laser_scan</topic>
             <update_rate>15</update_rate>
             <alwaysOn>1</alwaysOn>
             <visualize>true</visualize>
