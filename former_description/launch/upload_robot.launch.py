@@ -39,7 +39,7 @@ def generate_launch_description():
         parameters=[{
             "source_list": ['joint_states'],
             "rate": 100.0,
-            "use_sim_time": False
+            "use_sim_time": LaunchConfiguration('use_gazebo_sim')
         }],
         output='screen'
     )

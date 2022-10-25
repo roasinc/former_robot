@@ -76,11 +76,21 @@ def generate_launch_description():
         executable='parameter_bridge',
         arguments=[ '/clock@rosgraph_msgs/msg/Clock@ignition.msgs.Clock',
                     '/laser_scan@sensor_msgs/msg/LaserScan@ignition.msgs.LaserScan',
+                    '/imu@sensor_msgs/msg/Imu@ignition.msgs.IMU',
+                    '/camera/camera_info@sensor_msgs/msg/CameraInfo@ignition.msgs.CameraInfo'
         ],
         parameters=[{
             "use_sim_time": True
         }],
         output='screen'
+    )
+
+    ign_image_bridge = Node(
+        package='ros_gz_image',
+        executable="image_bridge",
+        arguments=[ 'camera/image',
+                    'camera/depth_image'
+        ]
     )
 
     static_tf_lidar = Node(
@@ -90,6 +100,34 @@ def generate_launch_description():
         arguments=[ "0.0", "0.0", "0.0", "0.0", "0.0", "0.0",
                     "laser_link",
                     [LaunchConfiguration('robot_name'), "/base_footprint/laser_link"]
+        ],
+        parameters=[{
+            "use_sim_time": True
+        }],
+        output='screen'
+    )
+
+    static_tf_camera = Node(
+        package='tf2_ros',
+        name="static_tf_lidar",
+        executable='static_transform_publisher',
+        arguments=[ "0.0", "0.0", "0.0", "0.0", "0.0", "0.0",
+                    "camera_link",
+                    [LaunchConfiguration('robot_name'), "/base_footprint/rgbd_camera"]
+        ],
+        parameters=[{
+            "use_sim_time": True
+        }],
+        output='screen'
+    )
+
+    static_tf_imu = Node(
+        package='tf2_ros',
+        name="static_tf_lidar",
+        executable='static_transform_publisher',
+        arguments=[ "0.0", "0.0", "0.0", "0.0", "0.0", "0.0",
+                    "imu_link",
+                    [LaunchConfiguration('robot_name'), "/base_footprint/imu"]
         ],
         parameters=[{
             "use_sim_time": True
@@ -144,8 +182,11 @@ def generate_launch_description():
         world_name,
         upload_robot,
         ign_gazebo,
+        ign_image_bridge,
         spawn_node,
         jsp_node,
         static_tf_lidar,
+        static_tf_camera,
+        static_tf_imu,
     ])
 
