@@ -184,25 +184,59 @@
         <xacro:insert_front_caster_wheel parent="${prefix}base_link" prefix1="${prefix}r" prefix2="l" dir="1" offset_x="-0.128" offset_y="0.099"/>
         <xacro:insert_front_caster_wheel parent="${prefix}base_link" prefix1="${prefix}r" prefix2="r" dir="-1" offset_x="-0.128" offset_y="0.099"/>
 
+        <link name="${prefix}imu_sensor">
+            <visual>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://former_description/meshes/visual/imu.dae" scale="1 1 1"/>
+                </geometry>
+            </visual>
+            <collision>
+                <origin xyz="0 0 0" rpy="0 0 0"/>
+                <geometry>
+                    <mesh filename="package://former_description/meshes/collision/imu.stl" scale="1 1 1"/>
+                </geometry>
+            </collision>
+            <inertial>
+                <origin xyz="0.0 0.0 0.0045" rpy="0 0 0"/>
+                <mass value="0.1"/>
+                <xacro:box_inertia m="0.032" x="0.032" y="0.032" z="0.009"/>
+            </inertial>
+        </link>
+
+        <joint name="${prefix}imu_sensor_fixed_joint" type="fixed">
+            <parent link="${prefix}base_link"/>
+            <child link="${prefix}imu_sensor"/>
+            <origin xyz="0.134 0 0.0045" rpy="0 0 0"/>
+        </joint>
+
+        <link name="${prefix}imu_link"/>
+
+        <joint name="${prefix}imu_link_fixed_joint" type="fixed">
+            <parent link="${prefix}imu_sensor"/>
+            <child link="${prefix}imu_link"/>
+            <origin xyz="0.0 0.0 0.009"/>
+        </joint>
+
         <xacro:macro name="insert_sonar_sensor" params="parent prefix dir">
             <link name="${prefix}_sonar_sensor">
                 <visual>
-                        <origin xyz="0 0 0" rpy="0 0 0"/>
-                        <geometry>
-                            <mesh filename="package://former_description/meshes/visual/sonar_sensor.dae" scale="1 1 1"/>
-                        </geometry>
-                    </visual>
-                    <collision>
-                        <origin xyz="0 0 0" rpy="0 0 0"/>
-                        <geometry>
-                            <mesh filename="package://former_description/meshes/collision/sonar_sensor.stl" scale="1 1 1"/>
-                        </geometry>
-                    </collision>
-                    <inertial>
-                        <origin xyz="0.004 0.002 0.000" rpy="0 0 0"/>
-                        <mass value="0.009290"/>
-                        <inertia ixx="0.000001" ixy="0.000000" ixz="0.000000" iyy="0.000001" iyz="0.000000" izz="0.000001"/>
-                    </inertial>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/visual/sonar_sensor.dae" scale="1 1 1"/>
+                    </geometry>
+                </visual>
+                <collision>
+                    <origin xyz="0 0 0" rpy="0 0 0"/>
+                    <geometry>
+                        <mesh filename="package://former_description/meshes/collision/sonar_sensor.stl" scale="1 1 1"/>
+                    </geometry>
+                </collision>
+                <inertial>
+                    <origin xyz="0.004 0.002 0.000" rpy="0 0 0"/>
+                    <mass value="0.009290"/>
+                    <inertia ixx="0.000001" ixy="0.000000" ixz="0.000000" iyy="0.000001" iyz="0.000000" izz="0.000001"/>
+                </inertial>
             </link>
 
             <joint name="${prefix}_sonar_sensor_fixed" type="fixed">
