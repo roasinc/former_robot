@@ -29,6 +29,7 @@ def generate_launch_description():
     realsense2_path = realsense2_path[:len(realsense2_path) - len('realsense2_description')]
     ign_gazebo_paths += pathsep + realsense2_path
 
+    # environ['IGN_MODEL_PATH'] = ign_gazebo_paths
     environ['IGN_FILE_PATH'] = ign_gazebo_paths
 
     ign_gazebo = IncludeLaunchDescription(
@@ -38,7 +39,7 @@ def generate_launch_description():
         ]),
         launch_arguments={
             'gz_args': [
-                            '-r -v0 ',
+                            ' -v4 ',
                             PathJoinSubstitution([
                                     get_package_share_directory('former_gazebo'),
                                     'worlds',
@@ -64,7 +65,9 @@ def generate_launch_description():
         output='screen',
         arguments=[
             '-name', LaunchConfiguration('robot_name'),
-            '-topic', 'robot_description'
+            '-topic', 'robot_description',
+            '-x', '-9.0',
+            '-y', '-6.0'
         ],
         parameters=[{
             "use_sim_time": True
