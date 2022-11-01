@@ -10,7 +10,7 @@
   <buildtool_depend>ament_cmake</buildtool_depend>
 
   <depend>former_description</depend>
-  <depend>ign_ros2_control</depend>
+  <depend>gz_ros2_control</depend>
   <depend>ros_gz</depend>
 
   <test_depend>ament_lint_auto</test_depend>

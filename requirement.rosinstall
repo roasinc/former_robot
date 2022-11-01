@@ -1,0 +1,2 @@
+- git: {local-name: gz_ros2_control, uri: 'https://github.com/ros-controls/gz_ros2_control.git', version: ahcorde/rename/ign_to_gz}
+- git: {local-name: ros_gz, uri: 'https://github.com/gazebosim/ros_gz.git', version: ros2}

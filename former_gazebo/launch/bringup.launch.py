@@ -15,31 +15,31 @@ def generate_launch_description():
     world_name = DeclareLaunchArgument("world_name", default_value="default.sdf")
 
     environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
-    ign_gazebo_paths = '/usr/lib/x86_64-linux-gnu/ign-gazebo-6/plugins:/usr/lib/x86_64-linux-gnu/ign-rendering-6/engine-plugins'
+    gz_resource_paths = '/lib/x86_64-linux-gnu/gz-sim-7/plugins:/lib/x86_64-linux-gnu/gz-rendering-7/engine-plugins'
 
     robot_path = get_package_share_directory('former_description')
     robot_path = robot_path[:len(robot_path) - len('former_description')]
     robot_path = get_package_share_directory('former_description')
     robot_path = robot_path[:len(robot_path) - len('former_description')]
-    ign_gazebo_paths += pathsep + robot_path
+    gz_resource_paths += pathsep + robot_path
 
     realsense2_path = get_package_share_directory('realsense2_description')
     realsense2_path = realsense2_path[:len(realsense2_path) - len('realsense2_description')]
     realsense2_path = get_package_share_directory('realsense2_description')
     realsense2_path = realsense2_path[:len(realsense2_path) - len('realsense2_description')]
-    ign_gazebo_paths += pathsep + realsense2_path
+    gz_resource_paths += pathsep + realsense2_path
 
-    # environ['IGN_MODEL_PATH'] = ign_gazebo_paths
-    environ['IGN_FILE_PATH'] = ign_gazebo_paths
+    # environ['IGN_MODEL_PATH'] = gz_resource_paths
+    environ['GZ_SIM_RESOURCE_PATH'] = gz_resource_paths
 
-    ign_gazebo = IncludeLaunchDescription(
+    gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
             get_package_share_directory('ros_gz_sim'),
             '/launch/gz_sim.launch.py'
         ]),
         launch_arguments={
             'gz_args': [
-                            ' -v4 ',
+                            '-r -v2 ',
                             PathJoinSubstitution([
                                     get_package_share_directory('former_gazebo'),
                                     'worlds',
@@ -66,8 +66,8 @@ def generate_launch_description():
         arguments=[
             '-name', LaunchConfiguration('robot_name'),
             '-topic', 'robot_description',
-            '-x', '-9.0',
-            '-y', '-6.0'
+            '-x', '-5.0',
+            '-y', '-3.0'
         ],
         parameters=[{
             "use_sim_time": True
@@ -77,10 +77,10 @@ def generate_launch_description():
     ign_bridge = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        arguments=[ '/clock@rosgraph_msgs/msg/Clock@ignition.msgs.Clock',
-                    '/laser_scan@sensor_msgs/msg/LaserScan@ignition.msgs.LaserScan',
-                    '/imu@sensor_msgs/msg/Imu@ignition.msgs.IMU',
-                    '/camera/camera_info@sensor_msgs/msg/CameraInfo@ignition.msgs.CameraInfo'
+        arguments=[ '/clock@rosgraph_msgs/msg/Clock@gz.msgs.Clock',
+                    '/laser_scan@sensor_msgs/msg/LaserScan@gz.msgs.LaserScan',
+                    '/imu@sensor_msgs/msg/Imu@gz.msgs.IMU',
+                    '/camera/camera_info@sensor_msgs/msg/CameraInfo@gz.msgs.CameraInfo'
         ],
         parameters=[{
             "use_sim_time": True
@@ -184,7 +184,7 @@ def generate_launch_description():
         robot_name,
         world_name,
         upload_robot,
-        ign_gazebo,
+        gz_sim,
         ign_image_bridge,
         spawn_node,
         jsp_node,
