@@ -12,7 +12,6 @@
 
         <plugin filename="gz-sim-imu-system" name="gz::sim::systems::Imu">
         </plugin>
-
     </gazebo>
 
     <gazebo reference="l_wheel">
@@ -69,7 +68,7 @@
 
     <gazebo reference="laser_link">
         <sensor name="laser_link" type="gpu_lidar">
-            <topic>laser_scan</topic>
+            <topic>scan</topic>
             <update_rate>15</update_rate>
             <alwaysOn>1</alwaysOn>
             <visualize>true</visualize>
