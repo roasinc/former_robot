@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <sdf version='1.7'>
-  <model name='office_building'>
+  <model name='charging_station'>
     <link name='link_0'>
       <inertial>
         <mass>1</mass>
@@ -18,7 +18,7 @@
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>./meshes/office_building.dae</uri>
+            <uri>./meshes/charging_station.dae</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
@@ -31,7 +31,7 @@
         <pose>0 0 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>./meshes/office_building.dae</uri>
+            <uri>./meshes/charging_station.dae</uri>
             <scale>1 1 1</scale>
           </mesh>
         </geometry>
