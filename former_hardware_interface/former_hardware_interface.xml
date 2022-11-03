@@ -1,0 +1,9 @@
+<library path="former_hardware_interface">
+    <class  name="former_hardware_interface/FormerSystemHardwareInterface"
+            type="former_hardware_interface::FormerSystemHardwareInterface"
+            base_class_type="hardware_interface::SystemInterface">
+        <description>
+            The ROS2 Control Hardware Interface for Former robot System.
+        </description>
+    </class>
+</library>
