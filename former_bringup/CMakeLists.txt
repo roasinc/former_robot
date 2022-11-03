@@ -24,6 +24,11 @@ if(BUILD_TESTING)
 endif()
 
 install(
+  FILES view_robot.rviz
+  DESTINATION share/${PROJECT_NAME}
+)
+
+install(
   DIRECTORY
     config
     launch
