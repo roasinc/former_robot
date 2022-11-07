@@ -10,10 +10,18 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "rclcpp_components/register_node_macro.hpp"
 
+#include <tf2/LinearMath/Quaternion.h>
+#include "tf2/exceptions.h"
+#include "tf2_ros/buffer.h"
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/static_transform_broadcaster.h"
+#include "tf2/utils.h"
+
 #include "former_interfaces/action/docking.hpp"
 #include "sensor_msgs/msg/laser_scan.hpp"
 #include "visualization_msgs/msg/marker.hpp"
-#include "geometry_msgs/msg/point.hpp"
+
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include "former_auto_docking/visibility_control.h"
 #include "former_auto_docking/line_extraction.h"
 
@@ -25,6 +33,10 @@ class FormerAutoDockingNode: public rclcpp::Node
         explicit FormerAutoDockingNode(const rclcpp::NodeOptions & options = rclcpp::NodeOptions())
         : Node("auto_docking_node", options)
         {
+            tf_buffer_.reset(new tf2_ros::Buffer(this->get_clock()));
+            tf_listener_.reset(new tf2_ros::TransformListener(*tf_buffer_));
+            tf_br_.reset(new tf2_ros::StaticTransformBroadcaster(this));
+
             data_cached_ = false;
 
             line_extraction_.setBearingVariance(1e-5 * 1e-5);
@@ -85,6 +97,7 @@ class FormerAutoDockingNode: public rclcpp::Node
 
             // Find Charging Station Pattern Line
             std::vector<Line> lines;
+            geometry_msgs::msg::PoseStamped charger_center_pose;
 
             int16_t error_count = 0;
             bool found_pattern = false;
@@ -135,7 +148,24 @@ class FormerAutoDockingNode: public rclcpp::Node
                             Eigen::Hyperplane<double, 2>::VectorType icp = l1.intersection(l2);
                             RCLCPP_INFO(this->get_logger(), "ICP x: %f, y: %f", icp.x(), icp.y());
 
+                            auto heading = atan2((lines[i+1].getEnd()[1] - lines[i].getStart()[1]), (lines[i+1].getEnd()[0] - lines[i].getStart()[0]));
+                            RCLCPP_INFO(this->get_logger(), "Heading: %f", heading - (M_PI/2));
 
+                            // Save the goal pose
+                            charger_center_pose.header.frame_id = "laser_link";
+                            charger_center_pose.header.stamp = this->now();
+
+                            charger_center_pose.pose.position.x = icp.x();
+                            charger_center_pose.pose.position.y = icp.y();
+                            charger_center_pose.pose.position.z = 0.0;
+
+                            tf2::Quaternion q;
+                            q.setRPY(0, 0, heading - (M_PI/2));
+
+                            charger_center_pose.pose.orientation.x = q[0];
+                            charger_center_pose.pose.orientation.y = q[1];
+                            charger_center_pose.pose.orientation.z = q[2];
+                            charger_center_pose.pose.orientation.w = q[3];
                         }
                     }
 
@@ -158,6 +188,58 @@ class FormerAutoDockingNode: public rclcpp::Node
                 std::this_thread::sleep_for(std::chrono::milliseconds(500));
                 continue;
             }
+
+
+            // Convert goal_pose to on odom frame
+            geometry_msgs::msg::PoseStamped charger_goal_pose_odom;
+            try
+            {
+                geometry_msgs::msg::PoseStamped charger_center_pose_odom;
+                tf_buffer_->transform(charger_center_pose, charger_center_pose_odom, "odom", tf2::durationFromSec(1.0));
+
+                geometry_msgs::msg::TransformStamped tf_goal_tansform;
+                tf_goal_tansform.header.frame_id = "odom";
+                tf_goal_tansform.header.stamp = this->now();
+                tf_goal_tansform.child_frame_id = "charger_center";
+
+                tf2::Quaternion q;
+                double theta = tf2::getYaw(charger_center_pose_odom.pose.orientation);
+                q.setRPY(0, 0, theta);
+
+                tf2::convert(tf2::Transform(q,
+                            tf2::Vector3(charger_center_pose_odom.pose.position.x, charger_center_pose_odom.pose.position.y, 0.0)),
+                                tf_goal_tansform.transform);
+
+                tf_br_->sendTransform(tf_goal_tansform);
+                std::this_thread::sleep_for(std::chrono::milliseconds(100));
+
+
+                geometry_msgs::msg::PoseStamped charger_goal_pose;
+                charger_goal_pose.header.frame_id = "charger_center";
+                charger_goal_pose.header.stamp = this->now();
+
+                charger_goal_pose.pose.position.x = -0.3;
+                charger_goal_pose.pose.orientation.w = 1.0;
+
+                tf_buffer_->transform(charger_goal_pose, charger_goal_pose_odom, "odom", tf2::durationFromSec(1.0));
+
+            }
+            catch (const tf2::TransformException& ex)
+            {
+                RCLCPP_WARN(this->get_logger(), "Error to transform target goal pose...");
+            }
+
+            publish_pose_markers(charger_goal_pose_odom);
+
+            // Move to charger_goal_pose_odom
+
+
+
+
+
+
+
+
 
             if (rclcpp::ok())
             {
@@ -233,9 +315,38 @@ class FormerAutoDockingNode: public rclcpp::Node
             pub_vis_lines_->publish(line_marker);
         }
 
+        void publish_pose_markers(const geometry_msgs::msg::PoseStamped pose_stamped)
+        {
+            visualization_msgs::msg::Marker pose_marker;
+
+            pose_marker.ns = "goal_pose";
+            pose_marker.id = 1;
+            pose_marker.type = visualization_msgs::msg::Marker::ARROW;
+
+            pose_marker.pose = pose_stamped.pose;
+
+            pose_marker.scale.x = 0.2;
+            pose_marker.scale.y = 0.05;
+            pose_marker.scale.z = 0.05;
+
+            pose_marker.color.r = 0.0;
+            pose_marker.color.g = 0.0;
+            pose_marker.color.b = 1.0;
+            pose_marker.color.a = 1.0;
+
+            pose_marker.header.frame_id = pose_stamped.header.frame_id;
+            pose_marker.header.stamp = this->now();
+
+            pub_vis_lines_->publish(pose_marker);
+        }
+
     private:
         LineExtraction line_extraction_;
         bool data_cached_;
+
+        std::shared_ptr<tf2_ros::Buffer> tf_buffer_;
+        std::shared_ptr<tf2_ros::StaticTransformBroadcaster> tf_br_;
+        std::shared_ptr<tf2_ros::TransformListener> tf_listener_;
 
         rclcpp_action::Server<former_interfaces::action::Docking>::SharedPtr as_;
         rclcpp::Subscription<sensor_msgs::msg::LaserScan>::SharedPtr sub_scan_;

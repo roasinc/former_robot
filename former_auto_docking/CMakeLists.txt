@@ -20,6 +20,22 @@ find_package(sensor_msgs REQUIRED)
 find_package(visualization_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(Eigen3 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+
+if(TARGET tf2_geometry_msgs::tf2_geometry_msgs)
+  get_target_property(_include_dirs tf2_geometry_msgs::tf2_geometry_msgs INTERFACE_INCLUDE_DIRECTORIES)
+else()
+  set(_include_dirs ${tf2_geometry_msgs_INCLUDE_DIRS})
+endif()
+
+find_file(TF2_CPP_HEADERS
+  NAMES tf2_geometry_msgs.hpp
+  PATHS ${_include_dirs}
+  NO_CACHE
+  PATH_SUFFIXES tf2_geometry_msgs
+)
 
 include_directories(
   include
@@ -40,6 +56,9 @@ ament_target_dependencies(auto_docking_node
   sensor_msgs
   visualization_msgs
   geometry_msgs
+  tf2
+  tf2_geometry_msgs
+  tf2_ros
   Eigen3
 )
 
