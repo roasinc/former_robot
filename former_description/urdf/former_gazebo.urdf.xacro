@@ -67,21 +67,21 @@
             <ray>
                 <scan>
                     <horizontal>
-                        <samples>640</samples>
+                        <samples>660</samples>
                         <resolution>1</resolution>
-                        <min_angle>-1.26889</min_angle>
-                        <max_angle>1.268899</max_angle>
+                        <min_angle>${-110*pi/180}</min_angle>
+                        <max_angle>${110*pi/180}</max_angle>
                     </horizontal>
                 </scan>
                 <range>
-                    <min>0.1</min>
+                    <min>0.05</min>
                     <max>15</max>
                     <resolution>0.01</resolution>
                 </range>
                 <noise>
                     <type>gaussian</type>
                     <mean>0.0</mean>
-                    <stddev>0.01</stddev>
+                    <stddev>0.005</stddev>
                 </noise>
             </ray>
             <plugin name="laser" filename="libgazebo_ros_ray_sensor.so">
