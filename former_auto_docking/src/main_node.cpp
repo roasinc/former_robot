@@ -44,18 +44,30 @@ class FormerAutoDockingNode: public rclcpp::Node
             data_cached_ = false;
             is_docked_n_charging_ = false;
 
-            line_extraction_.setBearingVariance(1e-5 * 1e-5);
-            line_extraction_.setRangeVariance(0.012 * 0.012);
-            line_extraction_.setLeastSqAngleThresh(0.0001);
-            line_extraction_.setLeastSqRadiusThresh(0.0001);
-            line_extraction_.setMaxLineGap(0.5);
-            line_extraction_.setMinLineLength(0.1);
-            line_extraction_.setMinRange(0.5);
-            line_extraction_.setMaxRange(250.0);
-            line_extraction_.setMinSplitDist(0.03);
-            line_extraction_.setOutlierDist(0.06);
-            line_extraction_.setMinLinePoints(10);
+            this->declare_parameter("bearing_variance", 1e-5);
+            this->declare_parameter("range_variance", 0.012);
+            this->declare_parameter("least_sq_angle_threshold", 0.0001);
+            this->declare_parameter("least_sq_radius_threshold ", 0.0001);
+            this->declare_parameter("max_line_gap", 0.5);
+            this->declare_parameter("mine_line_length", 0.1);
+            this->declare_parameter("min_range", 0.5);
+            this->declare_parameter("max_range", 250.0);
+            this->declare_parameter("min_split_distance", 0.03);
+            this->declare_parameter("outlier_distance", 0.06);
+            this->declare_parameter("min_line_points", 10);
+            this->declare_parameter("distance_approach", 0.265);
 
+            line_extraction_.setBearingVariance(pow(this->get_parameter("bearing_variance").get_parameter_value().get<double>(), 2));
+            line_extraction_.setRangeVariance(pow(this->get_parameter("range_variance").get_parameter_value().get<double>(), 2));
+            line_extraction_.setLeastSqAngleThresh(this->get_parameter("least_sq_angle_threshold").get_parameter_value().get<double>());
+            line_extraction_.setLeastSqRadiusThresh(this->get_parameter("least_sq_radius_threshold").get_parameter_value().get<double>());
+            line_extraction_.setMaxLineGap(this->get_parameter("max_line_gap").get_parameter_value().get<double>());
+            line_extraction_.setMinLineLength(this->get_parameter("mine_line_length").get_parameter_value().get<double>());
+            line_extraction_.setMinRange(this->get_parameter("min_range").get_parameter_value().get<double>());
+            line_extraction_.setMaxRange(this->get_parameter("max_range").get_parameter_value().get<double>());
+            line_extraction_.setMinSplitDist(this->get_parameter("min_split_distance").get_parameter_value().get<double>());
+            line_extraction_.setOutlierDist(this->get_parameter("outlier_distance").get_parameter_value().get<double>());
+            line_extraction_.setMinLinePoints(this->get_parameter("min_line_points").get_parameter_value().get<uint16_t>());
 
             sub_odom_ = this->create_subscription<nav_msgs::msg::Odometry>(
                 "odom", 10, std::bind(&FormerAutoDockingNode::odom_callback, this, std::placeholders::_1));
@@ -159,7 +171,7 @@ class FormerAutoDockingNode: public rclcpp::Node
                     charger_goal_pose.header.frame_id = "charger_center";
                     charger_goal_pose.header.stamp = this->now();
 
-                    charger_goal_pose.pose.position.x = -0.265;
+                    charger_goal_pose.pose.position.x = -1.0 * this->get_parameter("distance_approach").get_parameter_value().get<double>();
                     charger_goal_pose.pose.orientation.w = 1.0;
 
                     tf_buffer_->transform(charger_goal_pose, charger_goal_pose_odom, "odom", tf2::durationFromSec(1.0));
@@ -234,7 +246,7 @@ class FormerAutoDockingNode: public rclcpp::Node
                 goal_pose.header.frame_id = "charger_center";
                 goal_pose.header.stamp = this->now();
 
-                goal_pose.pose.position.x = -0.8;
+                goal_pose.pose.position.x = -2.0 * this->get_parameter("distance_approach").get_parameter_value().get<double>();
                 goal_pose.pose.orientation.z = M_PI;
                 goal_pose.pose.orientation.w = 0.0;
 
@@ -252,8 +264,8 @@ class FormerAutoDockingNode: public rclcpp::Node
 
                 RCLCPP_INFO(this->get_logger(), "Bear off from charging station...");
                 auto Kp_rho = 0.9;
-                auto Kp_alpha = 1.5;
-                auto Kp_beta = 0.3;
+                // auto Kp_alpha = 1.5;
+                // auto Kp_beta = 0.3;
 
                 geometry_msgs::msg::Twist cmd_vel;
                 auto rho = sqrt(pow(goal_pose_odom.pose.position.x - current_odom_.pose.pose.position.x, 2)
