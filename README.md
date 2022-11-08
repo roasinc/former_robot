@@ -1,5 +1,7 @@
 # former_robot
-Robot packages for Former
+Robot packages for Former (https://www.roas.co.kr/former/)
+
+<img width="50%" src="https://www.roas.co.kr/wp-content/uploads/2020/11/FORMER-th.jpg"/>
 
 ## Source build
 
