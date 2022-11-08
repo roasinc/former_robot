@@ -41,19 +41,22 @@ class Line
         void radiusFromLeastSq();
 
     private:
-        std::vector<unsigned int> indices_;
         CachedData c_data_;
         RangeData r_data_;
         Params params_;
-        PointParams p_params_;
-        std::vector<double> point_scalar_vars_;
-        std::vector<boost::array<double, 4> > point_covs_;
         double p_rr_;
         double angle_;
         double radius_;
+        boost::array<double, 4> covariance_;
         boost::array<double, 2> start_;
         boost::array<double, 2> end_;
-        boost::array<double, 4> covariance_;
+        std::vector<unsigned int> indices_;
+        PointParams p_params_;
+        std::vector<double> point_scalar_vars_;
+        std::vector<boost::array<double, 4> > point_covs_;
+
+
+
 };
 
 #endif
