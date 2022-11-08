@@ -79,7 +79,8 @@
                     <origin xyz="0.000 ${dir*0.031} 0.000" rpy="0 0 ${dir*pi/2}"/>
                     <mass value="0.843041"/>
                     <!-- <xacro:cylinder_inertia m="0.843041" r="0.0845" h="0.05"/> -->
-                    <inertia ixx="0.002632" ixy="0.000000" ixz="0.000000" iyy="0.001536" iyz="0.000000" izz="0.001536"/>
+                    <!-- <inertia ixx="0.002632" ixy="0.000000" ixz="0.000000" iyy="0.001536" iyz="0.000000" izz="0.001536"/> -->
+                    <inertia ixx="1.0" ixy="0.000000" ixz="0.000000" iyy="1.0" iyz="0.000000" izz="1.0"/>
                 </inertial>
             </link>
 
@@ -281,7 +282,7 @@
         <joint name="${prefix}laser_link_fixed_joint" type="fixed">
             <parent link="${prefix}lidar_mount"/>
             <child link="${prefix}laser_link"/>
-            <origin xyz="0 0 0.060" rpy="${pi} 0 0"/>
+            <origin xyz="0 0 0.060" rpy="0 0 0"/>
         </joint>
 
         <xacro:sensor_d435i parent="${prefix}base_link" name="${prefix}camera" use_nominal_extrinsics="false">

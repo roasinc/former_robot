@@ -1,0 +1,6 @@
+uint8 mode
+---
+bool success
+string message
+---
+bool is_moving

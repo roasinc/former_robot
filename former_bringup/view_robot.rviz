@@ -9,7 +9,8 @@ Panels:
         - /Odometry1/Shape1
         - /Imu1/Axes properties1
         - /Imu1/Acceleration properties1
-        - /PointCloud21
+        - /Marker1/Topic1
+        - /Marker1/Namespaces1
       Splitter Ratio: 0.5
     Tree Height: 1029
   - Class: rviz_common/Selection
@@ -66,6 +67,8 @@ Visualization Manager:
           Value: true
         camera_link:
           Value: true
+        charger_center:
+          Value: true
         f_l_caster_mount:
           Value: true
         f_l_caster_rotate:
@@ -92,6 +95,8 @@ Visualization Manager:
           Value: true
         lidar_mount:
           Value: true
+        odom:
+          Value: true
         r_l_caster_mount:
           Value: true
         r_l_caster_rotate:
@@ -116,44 +121,47 @@ Visualization Manager:
       Show Axes: true
       Show Names: true
       Tree:
-        base_footprint:
-          base_link:
-            camera_bottom_screw_frame:
-              camera_link:
-                camera_depth_frame:
+        odom:
+          base_footprint:
+            base_link:
+              camera_bottom_screw_frame:
+                camera_link:
+                  camera_depth_frame:
+                    {}
+              f_l_caster_mount:
+                f_l_caster_rotate:
+                  f_l_caster_wheel:
+                    {}
+              f_r_caster_mount:
+                f_r_caster_rotate:
+                  f_r_caster_wheel:
+                    {}
+              imu_sensor:
+                imu_link:
                   {}
-            f_l_caster_mount:
-              f_l_caster_rotate:
-                f_l_caster_wheel:
-                  {}
-            f_r_caster_mount:
-              f_r_caster_rotate:
-                f_r_caster_wheel:
-                  {}
-            imu_sensor:
-              imu_link:
+              l_sonar_sensor:
                 {}
-            l_sonar_sensor:
-              {}
-            l_wheel_mount:
-              l_wheel:
-                {}
-            lidar_mount:
-              laser_link:
-                {}
-            r_l_caster_mount:
-              r_l_caster_rotate:
-                r_l_caster_wheel:
+              l_wheel_mount:
+                l_wheel:
                   {}
-            r_r_caster_mount:
-              r_r_caster_rotate:
-                r_r_caster_wheel:
+              lidar_mount:
+                laser_link:
                   {}
-            r_sonar_sensor:
-              {}
-            r_wheel_mount:
-              r_wheel:
+              r_l_caster_mount:
+                r_l_caster_rotate:
+                  r_l_caster_wheel:
+                    {}
+              r_r_caster_mount:
+                r_r_caster_rotate:
+                  r_r_caster_wheel:
+                    {}
+              r_sonar_sensor:
                 {}
+              r_wheel_mount:
+                r_wheel:
+                  {}
+          charger_center:
+            {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -372,7 +380,7 @@ Visualization Manager:
       Name: LaserScan
       Position Transformer: XYZ
       Selectable: true
-      Size (Pixels): 3
+      Size (Pixels): 5
       Size (m): 0.009999999776482582
       Style: Points
       Topic:
@@ -461,10 +469,52 @@ Visualization Manager:
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: Marker
+      Namespaces:
+        goal_pose: true
+        lines: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /line_markers
+      Value: true
+    - Alpha: 0.30000001192092896
+      Buffer Length: 1
+      Class: rviz_default_plugins/Range
+      Color: 255; 255; 0
+      Enabled: true
+      Name: Range
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /l_sonar/range
+      Value: true
+    - Alpha: 0.30000001192092896
+      Buffer Length: 1
+      Class: rviz_default_plugins/Range
+      Color: 255; 255; 0
+      Enabled: true
+      Name: Range
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /r_sonar/range
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_footprint
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -507,25 +557,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 6.663769245147705
+      Distance: 3.76668119430542
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.4298713207244873
-        Y: -0.9098541736602783
-        Z: 1.4789756536483765
-      Focal Shape Fixed Size: true
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: false
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.26039794087409973
+      Pitch: 0.7853981852531433
       Target Frame: <Fixed Frame>
-      Value: Orbit (rviz)
-      Yaw: 3.6004109382629395
+      Value: Orbit (rviz_default_plugins)
+      Yaw: 0.7853981852531433
     Saved: ~
 Window Geometry:
   Displays:
