@@ -153,8 +153,8 @@ double Line::angleIncrement()
     const std::vector<double> &b = p_params_.b;
     const std::vector<double> &bp = p_params_.bp;
     const std::vector<double> &bpp = p_params_.bpp;
-    const std::vector<double> &c = p_params_.c;
-    const std::vector<double> &s = p_params_.s;
+    // const std::vector<double> &c = p_params_.c;
+    // const std::vector<double> &s = p_params_.s;
 
     double numerator = 0;
     double denominator = 0;
@@ -177,8 +177,8 @@ void Line::calcCovariance()
     const std::vector<double> &b = p_params_.b;
     const std::vector<double> &bp = p_params_.bp;
     const std::vector<double> &bpp = p_params_.bpp;
-    const std::vector<double> &c = p_params_.c;
-    const std::vector<double> &s = p_params_.s;
+    // const std::vector<double> &c = p_params_.c;
+    // const std::vector<double> &s = p_params_.s;
 
     double G = 0;
     double A = 0;
