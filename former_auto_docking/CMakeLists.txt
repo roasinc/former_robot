@@ -23,6 +23,8 @@ find_package(Eigen3 REQUIRED)
 find_package(tf2_ros REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(angles REQUIRED)
 
 if(TARGET tf2_geometry_msgs::tf2_geometry_msgs)
   get_target_property(_include_dirs tf2_geometry_msgs::tf2_geometry_msgs INTERFACE_INCLUDE_DIRECTORIES)
@@ -59,6 +61,8 @@ ament_target_dependencies(auto_docking_node
   tf2
   tf2_geometry_msgs
   tf2_ros
+  nav_msgs
+  angles
   Eigen3
 )
 
