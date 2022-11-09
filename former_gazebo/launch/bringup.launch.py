@@ -75,6 +75,20 @@ def generate_launch_description():
         }],
     )
 
+    robot_localization_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
+        output='screen',
+        parameters=[
+            os.path.join(
+                get_package_share_directory('former_bringup'),
+                'config/ekf.yaml'
+            ),
+            {'use_sim_time': True}
+        ],
+    )
+
     load_joint_state_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
                 'joint_state_broadcaster'],
@@ -105,5 +119,6 @@ def generate_launch_description():
         gz_server,
         gz_client,
         upload_robot,
+        robot_localization_node,
         spawn_robot,
     ])

@@ -31,6 +31,20 @@ def generate_launch_description():
 
     robot_description = {"robot_description": robot_description_content}
 
+    robot_localization_node = Node(
+        package='robot_localization',
+        executable='ekf_node',
+        name='ekf_filter_node',
+        output='screen',
+        parameters=[
+            os.path.join(
+                FindPackageShare('former_bringup'),
+                'config/ekf.yaml'
+            ),
+            {'use_sim_time': LaunchConfiguration('use_sim_time')}
+        ],
+    )
+
     robot_controllers = PathJoinSubstitution([
             FindPackageShare('former_bringup'),
             "config",
@@ -66,5 +80,6 @@ def generate_launch_description():
     ld.add_action(upload_robot)
     ld.add_action(control_node)
     ld.add_action(load_joint_state_broadcaster)
+    ld.add_action(robot_localization_node)
     ld.add_action(load_base_controller)
     return ld
