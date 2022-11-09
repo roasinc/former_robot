@@ -54,12 +54,12 @@
                 </inertial>
             </link>
 
-            <joint name="${prefix}_wheel_suspension_joint" type="prismatic">
+            <joint name="${prefix}_wheel_suspension_joint" type="fixed">
                 <parent link="${parent}" />
                 <child link="${prefix}_wheel_suspension" />
-                <axis xyz="0 0 1"/>
+                <!-- <axis xyz="0 0 1"/> -->
                 <origin xyz="0 ${dir*0.0741} 0" rpy="0 0 0"/>
-                <limit effort="10" velocity="0.1" lower="-0.01" upper="0.01"/>
+                <!-- <limit effort="10" velocity="0.1" lower="-0.01" upper="0.01"/> -->
             </joint>
 
             <link name="${prefix}_wheel_mount">
