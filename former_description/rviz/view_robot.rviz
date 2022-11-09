@@ -7,7 +7,7 @@ Panels:
         - /Global Options1
         - /Status1
       Splitter Ratio: 0.49408674240112305
-    Tree Height: 1782
+    Tree Height: 1772
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -58,6 +58,8 @@ Visualization Manager:
           Value: true
         camera_bottom_screw_frame:
           Value: true
+        camera_depth_frame:
+          Value: true
         camera_link:
           Value: true
         f_l_caster_mount:
@@ -72,11 +74,17 @@ Visualization Manager:
           Value: true
         f_r_caster_wheel:
           Value: true
+        imu_link:
+          Value: true
+        imu_sensor:
+          Value: true
         l_sonar_sensor:
           Value: true
         l_wheel:
           Value: true
         l_wheel_mount:
+          Value: true
+        l_wheel_suspension:
           Value: true
         laser_link:
           Value: true
@@ -100,6 +108,8 @@ Visualization Manager:
           Value: true
         r_wheel_mount:
           Value: true
+        r_wheel_suspension:
+          Value: true
       Marker Scale: 0.20000000298023224
       Name: TF
       Show Arrows: true
@@ -110,7 +120,8 @@ Visualization Manager:
           base_link:
             camera_bottom_screw_frame:
               camera_link:
-                {}
+                camera_depth_frame:
+                  {}
             f_l_caster_mount:
               f_l_caster_rotate:
                 f_l_caster_wheel:
@@ -119,11 +130,15 @@ Visualization Manager:
               f_r_caster_rotate:
                 f_r_caster_wheel:
                   {}
+            imu_sensor:
+              imu_link:
+                {}
             l_sonar_sensor:
               {}
-            l_wheel_mount:
-              l_wheel:
-                {}
+            l_wheel_suspension:
+              l_wheel_mount:
+                l_wheel:
+                  {}
             lidar_mount:
               laser_link:
                 {}
@@ -137,9 +152,10 @@ Visualization Manager:
                   {}
             r_sonar_sensor:
               {}
-            r_wheel_mount:
-              r_wheel:
-                {}
+            r_wheel_suspension:
+              r_wheel_mount:
+                r_wheel:
+                  {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -173,6 +189,10 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+        camera_depth_frame:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
         camera_link:
           Alpha: 1
           Show Axes: false
@@ -208,6 +228,15 @@ Visualization Manager:
           Show Axes: false
           Show Trail: false
           Value: true
+        imu_link:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        imu_sensor:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
         l_sonar_sensor:
           Alpha: 1
           Show Axes: false
@@ -219,6 +248,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         l_wheel_mount:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        l_wheel_suspension:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -273,6 +307,11 @@ Visualization Manager:
           Show Trail: false
           Value: true
         r_wheel_mount:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        r_wheel_suspension:
           Alpha: 1
           Show Axes: false
           Show Trail: false
@@ -331,33 +370,33 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.7401530742645264
+      Distance: 1.6985682249069214
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.048906806856393814
-        Y: -0.07522542774677277
-        Z: 0.13507485389709473
+        X: -0.045994482934474945
+        Y: 0.037010304629802704
+        Z: 0.13162896037101746
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3603983521461487
+      Pitch: 0.5147973299026489
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.9153980016708374
+      Yaw: 0.6072275042533875
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 2282
+  Height: 2272
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000400000000000002fb000007ecfc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b000000af00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000006d000007ec0000018000fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c000002610000000100000267000007ecfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000006d000007ec0000012f00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e9c00000058fc0100000002fb0000000800540069006d0065010000000000000e9c0000046400fffffffb0000000800540069006d0065010000000000000450000000000000000000000922000007ec00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000400000000000002fb000007e2fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b000000af00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000006d000007e20000018000fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c000002610000000100000267000007e2fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000006d000007e20000012f00fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e1000001970000000300000e8c00000058fc0100000002fb0000000800540069006d0065010000000000000e8c0000046400fffffffb0000000800540069006d0065010000000000000450000000000000000000000912000007e200000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -366,6 +405,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: false
-  Width: 3740
-  X: 100
-  Y: 44
+  Width: 3724
+  X: 116
+  Y: 54
