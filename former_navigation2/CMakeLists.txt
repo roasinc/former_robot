@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(former_nav2)
+project(former_navigation2)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -14,6 +14,7 @@ install(
     config
     launch
     maps
+    params
     rviz
   DESTINATION share/${PROJECT_NAME}
 )

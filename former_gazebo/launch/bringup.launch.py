@@ -32,7 +32,7 @@ def generate_launch_description():
         ]),
         launch_arguments={
             "verbose": "true",
-            "physics": "dart",
+            "physics": "ode",
             "world": PathJoinSubstitution([
                         get_package_share_directory('former_gazebo'),
                         'worlds',
