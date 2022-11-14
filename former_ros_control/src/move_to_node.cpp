@@ -33,7 +33,7 @@ class MoveToNode
             pnh_.param<std::string>("odom_frame", odom_frame_, "odom");
             pnh_.param<std::string>("base_footprint_frame", base_footprint_frame_, "base_footprint");
 
-            sub_odom_ = nh_.subscribe("base_controller/odom", 100, &MoveToNode::callback_odometry, this);
+            sub_odom_ = nh_.subscribe("odom", 100, &MoveToNode::callback_odometry, this);
             pub_cmd_vel_ = nh_.advertise<geometry_msgs::Twist>("cmd_vel", 10);
 
             sub_target_dist_ = nh_.subscribe("move_to_target_dist", 10, &MoveToNode::callback_move_to_target_dist, this);
@@ -87,7 +87,7 @@ class MoveToNode
                     ROS_INFO("[%s] remain distance... %f", ros::this_node::getName().c_str(), dist_to_target);
 
                     geometry_msgs::Twist cmd_vel;
-                    while(ros::ok() && abs(dist_to_target) > 0.01)
+                    while(ros::ok() && abs(dist_to_target) > 0.025)
                     {
                         cmd_vel.linear.x = std::min(0.2, dist_to_target * 0.9);
                         pub_cmd_vel_.publish(cmd_vel);
@@ -95,6 +95,8 @@ class MoveToNode
                         dist_to_target = sqrt(pow(odom_target_pose.pose.position.x - current_odom_.pose.pose.position.x, 2)
                                             + pow(odom_target_pose.pose.position.y - current_odom_.pose.pose.position.y, 2));
                         ROS_INFO("[%s] remain distance... %f", ros::this_node::getName().c_str(), dist_to_target);
+
+                        ros::Duration(0.005).sleep();
                     }
 
                     cmd_vel.linear.x = 0.0;
@@ -110,7 +112,7 @@ class MoveToNode
                     ROS_INFO("[%s] remain theta... %f", ros::this_node::getName().c_str(), error_theta);
 
                     geometry_msgs::Twist cmd_vel;
-                    while(ros::ok() && abs(error_theta) > 0.025)
+                    while(ros::ok() && abs(error_theta) > 0.03)
                     {
 
                         cmd_vel.angular.z = copysign(1.0, error_theta) * std::min(0.3, error_theta * 0.9);
@@ -119,6 +121,8 @@ class MoveToNode
                         current_theta = tf2::getYaw(current_odom_.pose.pose.orientation);
                         error_theta = angles::shortest_angular_distance(current_theta, goal_theta);
                         ROS_INFO("[%s] remain theta... %f", ros::this_node::getName().c_str(), error_theta);
+
+                        ros::Duration(0.005).sleep();
                     }
 
                     cmd_vel.angular.z = 0.0;
