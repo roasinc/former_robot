@@ -32,3 +32,11 @@ $ rosdep install --from-paths src --ignore-src -r -y
 $ cd ~/dev_ws
 $ colcon build --symlink-install
 ```
+
+### Execute
+
+Gazebo
+
+```shell
+$ ros2 launch former_gazebo bringup.launch.py world_name:=office_building.world
+```
