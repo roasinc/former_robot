@@ -2,18 +2,18 @@
 Robot packages for Former (https://www.roas.co.kr/former/)
 
 ## Specification
-DIMENSIONS (L X W X H): 404 X 404 X 308 MM
-WEIGHT: 35 KG
-GROUND CLEARANCE: 60 MM
-PERFORMANCE
-  MAX. SPEED: 1.5 M/S
-  MAX. PAYLOAD: 70 KG
+- DIMENSIONS (L X W X H): 404 X 404 X 308 MM
+- WEIGHT: 35 KG
+- GROUND CLEARANCE: 60 MM
+- PERFORMANCE
+  - MAX. SPEED: 1.5 M/S
+  - MAX. PAYLOAD: 70 KG
 
-TYPE OF DRIVE: TWO WHEELS DIFFERENTIAL DRIVE
-DRIVE POWER: 300 W
-WORKING ENVIRONMENT: INDOOR
+- TYPE OF DRIVE: TWO WHEELS DIFFERENTIAL DRIVE
+- DRIVE POWER: 300 W
+- WORKING ENVIRONMENT: INDOOR
 
-<img width="50%" src="https://www.roas.co.kr/wp-content/uploads/2020/11/FORMER-th.jpg"/>
+<img width="50%" src="https://roas.co.kr/wp-content/uploads/2020/11/FORMER-th.jpg"/>
 
 ## Source build
 
