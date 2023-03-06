@@ -99,7 +99,7 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_deactivate(
 
 hardware_interface::return_type FormerSystemHardwareInterface::read(const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
 {
-    RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "read");
+    // RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "read");
     // read current state from motor driver
 
     hw_states_positions_[0] = 0.0;
@@ -112,7 +112,7 @@ hardware_interface::return_type FormerSystemHardwareInterface::read(const rclcpp
 
 hardware_interface::return_type FormerSystemHardwareInterface::write(const rclcpp::Time& /*time*/, const rclcpp::Duration & /*period*/)
 {
-    RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "write");
+    // RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "write");
     // write command to motor driver
 
     return hardware_interface::return_type::OK;

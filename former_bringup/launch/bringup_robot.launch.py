@@ -1,3 +1,5 @@
+import os
+
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
@@ -9,6 +11,7 @@ from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, Comm
 
 def generate_launch_description():
     ld = LaunchDescription()
+    use_sim_time = DeclareLaunchArgument("use_sim_time", default_value="false")
 
     upload_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -37,10 +40,10 @@ def generate_launch_description():
         name='ekf_filter_node',
         output='screen',
         parameters=[
-            os.path.join(
+            PathJoinSubstitution([
                 FindPackageShare('former_bringup'),
                 'config/ekf.yaml'
-            ),
+            ]),
             {'use_sim_time': LaunchConfiguration('use_sim_time')}
         ],
     )
@@ -77,9 +80,51 @@ def generate_launch_description():
         output='screen'
     )
 
+    lidar_bringup = Node(
+        package="sick_scan",
+        executable="sick_generic_caller",
+        respawn=True,
+        arguments=[
+            'scanner_type:=sick_tim_5xx',
+            'hostname:=192.168.10.11',
+            'frame_id:=laser_link',
+            'min_ang:=-2.0',
+            'max_ang:=2.0',
+            'nodename:=front_lidar',
+            'range_min:=0.05',
+            'sw_pll_only_publish:=false',
+        ],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        },
+        remappings=[
+            ('front_lidar/scan', 'scan')
+        ]
+    )
+
+    imu_bringup = Node(
+        package="imu_xg6000_ros2",
+        executable="main_node",
+        respawn=True,
+        parameters=[
+            {'port_name': '/dev/ttyIMU'},
+            {'baudrate': 38400},
+            {'frame_id': 'imu_link'},
+        ],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        }
+    )
+
+
+    ld.add_action(use_sim_time)
     ld.add_action(upload_robot)
     ld.add_action(control_node)
     ld.add_action(load_joint_state_broadcaster)
     ld.add_action(robot_localization_node)
     ld.add_action(load_base_controller)
+    ld.add_action(lidar_bringup)
+    ld.add_action(imu_bringup)
     return ld

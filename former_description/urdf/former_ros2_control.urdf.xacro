@@ -10,8 +10,8 @@
             <xacro:unless value="$(arg use_gazebo_sim)">
                 <hardware>
                     <plugin>former_hardware_interface/FormerSystemHardwareInterface</plugin>
-                    <param name="port_name">/dev/ttyUSB0</param>
-                    <param name="baudrate">921600</param>
+                    <param name="port_name">/dev/ttyMOTOR</param>
+                    <param name="baudrate">115200</param>
                 </hardware>
             </xacro:unless>
 
