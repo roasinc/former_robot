@@ -82,6 +82,12 @@ def generate_launch_description():
         output='screen'
     )
 
+    load_former_io_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+                'former_io_controller'],
+        output='screen'
+    )
+
     lidar_bringup = Node(
         package="sick_scan",
         executable="sick_generic_caller",
@@ -140,10 +146,11 @@ def generate_launch_description():
                 control_node,
                 load_joint_state_broadcaster,
                 load_base_controller,
+                load_former_io_controller,
             ]
         ),
         # robot_localization_node,
-        lidar_bringup,
-        imu_bringup,
-        realsense2_bringup,
+        # lidar_bringup,
+        # imu_bringup,
+        # realsense2_bringup,
     ])

@@ -136,6 +136,15 @@ std::vector<hardware_interface::StateInterface> FormerSystemHardwareInterface::e
             info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &hw_efforts_[i]));
     }
 
+    state_interfaces.emplace_back(hardware_interface::StateInterface("gpio", "motor_enabled", &enable_motor_state_));
+    state_interfaces.emplace_back(hardware_interface::StateInterface("gpio", "estop_button_state", &estop_button_state_));
+    state_interfaces.emplace_back(hardware_interface::StateInterface("gpio", "system_voltage", &system_voltage_));
+    state_interfaces.emplace_back(hardware_interface::StateInterface("gpio", "charging_voltage", &charging_voltage_));
+    state_interfaces.emplace_back(hardware_interface::StateInterface("gpio", "user_power_current1", &user_power_current1_));
+    state_interfaces.emplace_back(hardware_interface::StateInterface("gpio", "user_power_current2", &user_power_current2_));
+    state_interfaces.emplace_back(hardware_interface::StateInterface("gpio", "curent_temperature", &current_temperature_));
+    state_interfaces.emplace_back(hardware_interface::StateInterface("gpio", "fault_flags", &fault_flags_));
+
     return state_interfaces;
 }
 
@@ -156,6 +165,8 @@ std::vector<hardware_interface::CommandInterface> FormerSystemHardwareInterface:
             );
         }
     }
+
+    command_interfaces.emplace_back(hardware_interface::CommandInterface("gpio", "set_enable_motor", &enable_motor_cmd_));
 
     return command_interfaces;
 }

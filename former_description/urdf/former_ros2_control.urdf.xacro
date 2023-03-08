@@ -37,6 +37,18 @@
                 <state_interface name="effort"/>
             </joint>
 
+            <gpio name="gpio">
+                <command_interface name="set_enable_motor"/>
+                <state_interface name="motor_enabled"/>
+                <state_interface name="estop_button_state"/>
+                <state_interface name="system_voltage"/>
+                <state_interface name="charging_voltage"/>
+                <state_interface name="user_power_current1"/>
+                <state_interface name="user_power_current2"/>
+                <state_interface name="curent_temperature"/>
+                <state_interface name="fault_flags"/>
+            </gpio>
+
         </ros2_control>
     </xacro:macro>
 </robot>

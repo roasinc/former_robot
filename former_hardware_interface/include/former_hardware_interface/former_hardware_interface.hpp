@@ -55,6 +55,17 @@ class FormerSystemHardwareInterface: public hardware_interface::SystemInterface
         int32_t l_last_enc_;
         int32_t r_last_enc_;
 
+        //GPIO Interfaces
+        double enable_motor_cmd_;
+        double enable_motor_state_;
+        double estop_button_state_;
+        double system_voltage_;
+        double charging_voltage_;
+        double user_power_current1_;
+        double user_power_current2_;
+        double current_temperature_;
+        double fault_flags_;
+
         std::vector<int32_t> last_encoder_value_;
         std::vector<double> hw_commands_;
         std::vector<double> hw_positions_;
