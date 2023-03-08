@@ -12,6 +12,8 @@
   <depend>ros2_controllers</depend>
   <depend>rviz_imu_plugin</depend>
   <depend>robot_localization</depend>
+  <depend>imu_xg6000_ros2</depend>
+  <depend>realsense2_camera</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

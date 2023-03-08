@@ -1,16 +1,17 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.substitutions import FindPackageShare
+from launch.event_handlers import OnExecutionComplete
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, Command
 
 def generate_launch_description():
-    ld = LaunchDescription()
+    # ld = LaunchDescription()
     use_sim_time = DeclareLaunchArgument("use_sim_time", default_value="false")
 
     upload_robot = IncludeLaunchDescription(
@@ -119,13 +120,30 @@ def generate_launch_description():
         }
     )
 
+    realsense2_bringup = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            get_package_share_directory('realsense2_camera'),
+            '/launch/rs_launch.py']
+        ),
+        launch_arguments = {
+            'pointcloud.enable': "true",
+            'align_depth': "true",
+            'pointcloud': "true",
+        }.items()
+    )
 
-    ld.add_action(use_sim_time)
-    ld.add_action(upload_robot)
-    ld.add_action(control_node)
-    ld.add_action(load_joint_state_broadcaster)
-    # ld.add_action(robot_localization_node)
-    ld.add_action(load_base_controller)
-    # ld.add_action(lidar_bringup)
-    # ld.add_action(imu_bringup)
-    return ld
+    return LaunchDescription([
+        use_sim_time,
+        upload_robot,
+        GroupAction(
+            actions=[
+                control_node,
+                load_joint_state_broadcaster,
+                load_base_controller,
+            ]
+        ),
+        # robot_localization_node,
+        lidar_bringup,
+        imu_bringup,
+        realsense2_bringup,
+    ])

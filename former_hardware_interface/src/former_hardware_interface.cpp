@@ -282,7 +282,8 @@ hardware_interface::return_type FormerSystemHardwareInterface::read(const rclcpp
         }
         catch(LibSerial::ReadTimeout &e)
         {
-            assert(false && "Timeout for read motor states...");
+            // assert(false && "Timeout for read motor states...");
+            break;
         }
     }
 
