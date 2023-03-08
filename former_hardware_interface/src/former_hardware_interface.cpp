@@ -92,6 +92,18 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
     l_last_enc_ = 0;
     r_last_enc_ = 0;
 
+    enable_motor_cmd_ = 0.0;
+    enable_motor_state_= 0.0;
+    estop_button_state_= 0.0;
+    system_voltage_= 0.0;
+    charging_voltage_= 0.0;
+    user_power_current1_= 0.0;
+    user_power_current2_= 0.0;
+    current_temperature_= 0.0;
+    fault_flags_= 0.0;
+
+    is_estop_processed_ = estop_button_state_;
+
     auto port_name = info_.hardware_parameters["port_name"];
     auto baudrate = std::stoi(info_.hardware_parameters["baudrate"]);
     RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "Get port_name [%s] and baudrate [%d]", port_name.c_str(), baudrate);
@@ -217,23 +229,14 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_deactivate(
 hardware_interface::return_type FormerSystemHardwareInterface::read(const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
 {
     // RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "read");
-    int index_count = 0;
-
     // struct timespec start, end;
     // clock_gettime(CLOCK_MONOTONIC, &start);
 
     ser_.Write("?A_?AI_?C_?FF_?T 1_?V 2_?DI\r");
     ser_.DrainWriteBuffer();
 
-    double current_temp = 0.0;
-    double current_voltage = 0.0;
     double motor_current[2] = {0, };
-    double charging_volt = 0.0;
-    double user_power_current1 = 0.0;
-    double user_power_current2 = 0.0;
     long int current_encoder[2] = {0, };
-    bool motor_enabled = false;
-    bool estop_pressed = false;
 
     while(rclcpp::ok())
     {
@@ -247,17 +250,17 @@ hardware_interface::return_type FormerSystemHardwareInterface::read(const rclcpp
                 auto data = recv_data.substr(2);
                 std::vector<std::string> data_array;
                 boost::split(data_array, data, boost::algorithm::is_any_of(":"));
-                motor_current[0] = atof(data_array[0].c_str());
-                motor_current[1] = atof(data_array[1].c_str());
+                motor_current[0] = atof(data_array[0].c_str()) / 10.0;
+                motor_current[1] = atof(data_array[1].c_str()) / 10.0;
             }
             if(recv_data[0] == 'A' && recv_data[1] == 'I')
             {
                 auto data = recv_data.substr(3);
                 std::vector<std::string> data_array;
                 boost::split(data_array, data, boost::algorithm::is_any_of(":"));
-                charging_volt = atof(data_array[2].c_str());
-                user_power_current1 = atof(data_array[3].c_str());
-                user_power_current2 = atof(data_array[4].c_str());
+                charging_voltage_ = atof(data_array[2].c_str());
+                user_power_current1_ = atof(data_array[3].c_str()) / 1000.0;
+                user_power_current2_ = atof(data_array[4].c_str()) / 1000.0;
             }
             if(recv_data[0] == 'C' && recv_data[1] == '=')
             {
@@ -270,24 +273,25 @@ hardware_interface::return_type FormerSystemHardwareInterface::read(const rclcpp
             if(recv_data[0] == 'F' && recv_data[1] == 'F')
             {
                 auto data = recv_data.substr(3);
-                motor_enabled = atoi(data.c_str()) == 16 ? true : false;
+                enable_motor_state_ = atoi(data.c_str()) == 16 ? 0.0 : 1.0;
+                fault_flags_ = atoi(data.c_str());
             }
             if(recv_data[0] == 'T' && recv_data[1] == '=')
             {
                 auto data = recv_data.substr(2);
-                current_temp = atof(data.c_str());
+                current_temperature_ = atof(data.c_str());
             }
             if(recv_data[0] == 'V' && recv_data[1] == '=')
             {
                 auto data = recv_data.substr(2);
-                current_voltage = atof(data.c_str());
+                system_voltage_ = atof(data.c_str()) / 10.0;
             }
             if(recv_data[0] == 'D' && recv_data[1] == 'I')
             {
                 auto data = recv_data.substr(3);
                 std::vector<std::string> data_array;
                 boost::split(data_array, data, boost::algorithm::is_any_of(":"));
-                estop_pressed = atoi(data_array[0].c_str()) == 1 ? true : false;
+                estop_button_state_ = atoi(data_array[0].c_str()) == 1 ? 0.0 : 1.0;
                 break;
             }
         }
@@ -306,8 +310,8 @@ hardware_interface::return_type FormerSystemHardwareInterface::read(const rclcpp
     hw_positions_[1] += (double)(r_last_enc_ - current_encoder[1]) / 16384.0 * (2.0 * M_PI) * -1.0;
     hw_velocities_[0] = 0.0;
     hw_velocities_[1] = 0.0;
-    hw_efforts_[0] = 0.0;
-    hw_efforts_[1] = 0.0;
+    hw_efforts_[0] = motor_current[0];
+    hw_efforts_[1] = motor_current[1];
 
     l_last_enc_ = current_encoder[0];
     r_last_enc_ = current_encoder[1];
@@ -328,8 +332,25 @@ hardware_interface::return_type FormerSystemHardwareInterface::write(const rclcp
 
     // RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "%f %f %d %d", hw_commands_[0], hw_commands_[1], l_rpm, r_rpm);
 
-    auto cmd_str = boost::format("!G 1 %1%_!G 2 %2%}\r") % cmd_l_motor % cmd_r_motor;
-    RCLCPP_DEBUG(rclcpp::get_logger("FormerSystemHardwareInterface"), "%s", cmd_str.str().c_str());
+    auto cmd_str = boost::format("");
+    if(enable_motor_state_ == 1.0 && estop_button_state_ == 0)
+    {
+        cmd_str = boost::format("!G 1 %1%_!G 2 %2%}\r") % cmd_l_motor % cmd_r_motor;
+        RCLCPP_DEBUG(rclcpp::get_logger("FormerSystemHardwareInterface"), "%s", cmd_str.str().c_str());
+    }
+
+    if(is_estop_processed_ != estop_button_state_)
+    {
+        if(estop_button_state_ == 1.0)
+        {
+            cmd_str = boost::format("!EX\r");
+        }
+        else
+        {
+            cmd_str = boost::format("!MG\r");
+        }
+        is_estop_processed_ = estop_button_state_;
+    }
 
     ser_.Write(cmd_str.str());
     ser_.DrainWriteBuffer();

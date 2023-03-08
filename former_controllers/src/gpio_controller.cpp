@@ -51,14 +51,16 @@ namespace former_controllers
 
         auto feedback_msg = former_interfaces::msg::RobotFeedback();
 
-        feedback_msg.motor_enabled = true;
-        feedback_msg.estop_button = true;
-        feedback_msg.system_voltage = true;
-        feedback_msg.charging_voltage = true;
-        feedback_msg.user_power_current1 = true;
-        feedback_msg.user_power_current2 = true;
-        feedback_msg.current_temperature = true;
-        feedback_msg.fault_flag = true;
+        feedback_msg.header.stamp = get_node()->now();
+
+        feedback_msg.motor_enabled = enable_motor_state_;
+        feedback_msg.estop_button = estop_button_state_;
+        feedback_msg.system_voltage = system_voltage_;
+        feedback_msg.charging_voltage = charging_voltage_;
+        feedback_msg.user_power_current1 = user_power_current1_;
+        feedback_msg.user_power_current2 = user_power_current2_;
+        feedback_msg.current_temperature = current_temperature_;
+        feedback_msg.fault_flag = fault_flag_;
 
         pub_robot_feedback_->publish(feedback_msg);
         return controller_interface::return_type::OK;

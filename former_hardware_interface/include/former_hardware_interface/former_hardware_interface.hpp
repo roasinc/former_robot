@@ -66,6 +66,8 @@ class FormerSystemHardwareInterface: public hardware_interface::SystemInterface
         double current_temperature_;
         double fault_flags_;
 
+        double is_estop_processed_;
+
         std::vector<int32_t> last_encoder_value_;
         std::vector<double> hw_commands_;
         std::vector<double> hw_positions_;
