@@ -66,6 +66,7 @@ def generate_launch_description():
             "stdout": "screen",
             "stderr": "screen",
         },
+        respawn=True,
     )
 
     load_joint_state_broadcaster = ExecuteProcess(
@@ -123,8 +124,8 @@ def generate_launch_description():
     ld.add_action(upload_robot)
     ld.add_action(control_node)
     ld.add_action(load_joint_state_broadcaster)
-    ld.add_action(robot_localization_node)
+    # ld.add_action(robot_localization_node)
     ld.add_action(load_base_controller)
-    ld.add_action(lidar_bringup)
-    ld.add_action(imu_bringup)
+    # ld.add_action(lidar_bringup)
+    # ld.add_action(imu_bringup)
     return ld

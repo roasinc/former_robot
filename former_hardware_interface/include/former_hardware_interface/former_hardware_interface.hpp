@@ -17,8 +17,7 @@
 #include "rclcpp/time.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
-
-#include "former_hardware_interface/visibility_control.h"
+#include "hardware_interface/visibility_control.h"
 
 namespace former_hardware_interface
 {
@@ -27,25 +26,25 @@ class FormerSystemHardwareInterface: public hardware_interface::SystemInterface
     public:
         RCLCPP_SHARED_PTR_DEFINITIONS(FormerSystemHardwareInterface)
 
-        FORMER_HARDWARE_INTERFACE_PUBLIC
+        HARDWARE_INTERFACE_PUBLIC
         hardware_interface::CallbackReturn on_init(const hardware_interface::HardwareInfo &info) override;
 
-        FORMER_HARDWARE_INTERFACE_PUBLIC
+        HARDWARE_INTERFACE_PUBLIC
         std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
 
-        FORMER_HARDWARE_INTERFACE_PUBLIC
+        HARDWARE_INTERFACE_PUBLIC
         std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
-        FORMER_HARDWARE_INTERFACE_PUBLIC
+        HARDWARE_INTERFACE_PUBLIC
         hardware_interface::CallbackReturn on_activate(const rclcpp_lifecycle::State &previous_state) override;
 
-        FORMER_HARDWARE_INTERFACE_PUBLIC
+        HARDWARE_INTERFACE_PUBLIC
         hardware_interface::CallbackReturn on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
-        FORMER_HARDWARE_INTERFACE_PUBLIC
+        HARDWARE_INTERFACE_PUBLIC
         hardware_interface::return_type read(const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
-        FORMER_HARDWARE_INTERFACE_PUBLIC
+        HARDWARE_INTERFACE_PUBLIC
         hardware_interface::return_type write(const rclcpp::Time & time, const rclcpp::Duration & period) override;
 
     private:
@@ -53,11 +52,14 @@ class FormerSystemHardwareInterface: public hardware_interface::SystemInterface
     private:
         LibSerial::SerialPort ser_;
 
+        int32_t l_last_enc_;
+        int32_t r_last_enc_;
+
         std::vector<int32_t> last_encoder_value_;
-        std::vector<double> hw_commands_positions_;
-        std::vector<double> hw_commands_velocities_;
-        std::vector<double> hw_states_positions_;
-        std::vector<double> hw_states_velocities_;
+        std::vector<double> hw_commands_;
+        std::vector<double> hw_positions_;
+        std::vector<double> hw_velocities_;
+        std::vector<double> hw_efforts_;
 };
 } // namespace former_hardware_interface
 
