@@ -92,7 +92,7 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
     l_last_enc_ = 0;
     r_last_enc_ = 0;
 
-    enable_motor_cmd_ = 0.0;
+    enable_motor_cmd_ = 1.0;
     enable_motor_state_= 0.0;
     estop_button_state_= 0.0;
     system_voltage_= 0.0;
@@ -357,10 +357,18 @@ hardware_interface::return_type FormerSystemHardwareInterface::write(const rclcp
     // RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "%f %f %d %d", hw_commands_[0], hw_commands_[1], l_rpm, r_rpm);
 
     auto cmd_str = boost::format("");
-    if(enable_motor_state_ == 1.0 && estop_button_state_ == 0)
+    if(enable_motor_cmd_ != is_enable_motor_processed_)
     {
-        cmd_str = boost::format("!G 1 %1%_!G 2 %2%}\r") % cmd_l_motor % cmd_r_motor;
-        RCLCPP_DEBUG(rclcpp::get_logger("FormerSystemHardwareInterface"), "%s", cmd_str.str().c_str());
+        if(enable_motor_cmd_ == 1.0)
+        {
+            cmd_str = boost::format("!MG\r");
+        }
+        else
+        {
+            cmd_str = boost::format("!EX\r");
+        }
+
+        is_enable_motor_processed_ = enable_motor_cmd_;
     }
 
     if(is_estop_processed_ != estop_button_state_)
@@ -374,6 +382,12 @@ hardware_interface::return_type FormerSystemHardwareInterface::write(const rclcp
             cmd_str = boost::format("!MG\r");
         }
         is_estop_processed_ = estop_button_state_;
+    }
+
+    if(enable_motor_state_ == 1.0 && estop_button_state_ == 0 && enable_motor_cmd_ == 1.0)
+    {
+        cmd_str = boost::format("!G 1 %1%_!G 2 %2%}\r") % cmd_l_motor % cmd_r_motor;
+        RCLCPP_DEBUG(rclcpp::get_logger("FormerSystemHardwareInterface"), "%s", cmd_str.str().c_str());
     }
 
     ser_.Write(cmd_str.str());

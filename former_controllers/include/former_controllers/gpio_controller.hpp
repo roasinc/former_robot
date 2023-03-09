@@ -44,6 +44,7 @@ namespace former_controllers
             CallbackReturn on_init() override;
 
         private:
+            void callback_enable_motor_command(const std_msgs::msg::Bool & msg);
 
         private:
             bool enable_motor_state_;
@@ -56,7 +57,7 @@ namespace former_controllers
             uint8_t fault_flag_;
 
             std::shared_ptr<rclcpp::Publisher<former_interfaces::msg::RobotFeedback>> pub_robot_feedback_;
-            // rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_enable_motor_;
+            rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr sub_enable_motor_;
     };
 }
 

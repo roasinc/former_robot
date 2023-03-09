@@ -77,8 +77,8 @@ namespace former_controllers
         try
         {
             pub_robot_feedback_ = get_node()->create_publisher<former_interfaces::msg::RobotFeedback>("~/robot_feedback", rclcpp::SystemDefaultsQoS());
-            // sub_enable_motor_ = get_node()->create_subscription<std_msgs::msg::Bool>(
-            //     "~/enable_motor", 10, std::bind(&GPIOController::callback_enable_motor_command, this, std::placeholders::_1));
+            sub_enable_motor_ = get_node()->create_subscription<std_msgs::msg::Bool>(
+                "~/enable_motor", 10, std::bind(&GPIOController::callback_enable_motor_command, this, std::placeholders::_1));
         }
         catch (...)
         {
@@ -94,7 +94,7 @@ namespace former_controllers
         try
         {
             pub_robot_feedback_.reset();
-            // sub_enable_motor_.reset();
+            sub_enable_motor_.reset();
         }
         catch (...)
         {
@@ -104,10 +104,10 @@ namespace former_controllers
         return LifecycleNodeInterface::CallbackReturn::SUCCESS;
     }
 
-    // void GPIOController::callback_enable_motor_command(const std_msgs::msg::Bool & msg)
-    // {
-    //     command_interfaces_[CommandInterfaces::ENABLE_MOTOR_CMD].set_value(msg.data ? 1.0 : 0.0);
-    // }
+    void GPIOController::callback_enable_motor_command(const std_msgs::msg::Bool & msg)
+    {
+        command_interfaces_[CommandInterfaces::ENABLE_MOTOR_CMD].set_value(msg.data ? 1.0 : 0.0);
+    }
 }
 
 #include "pluginlib/class_list_macros.hpp"
