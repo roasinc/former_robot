@@ -169,6 +169,32 @@ def generate_launch_description():
         }.items()
     )
 
+    joy_node = Node(
+        package='joy',
+        executable='joy_node',
+        name='joy_node',
+        parameters=[{
+            'dev': '/dev/js0',
+            'deadzone': 0.3,
+            'autorepeat_rate': 20.0,
+        }],
+    )
+
+    teleop_joy_node = Node(
+        package='teleop_twist_joy',
+        executable='teleop_node',
+        name='teleop_twist_joy_node',
+        parameters=[
+            PathJoinSubstitution([
+                FindPackageShare('former_bringup'),
+                'config/ps5.config.yaml'
+            ]),
+        ],
+        remappings=[
+            ('cmd_vel', 'base_controller/cmd_vel_unstamped')
+        ]
+    )
+
     return LaunchDescription([
         use_sim_time,
         upload_robot,
@@ -186,4 +212,6 @@ def generate_launch_description():
         realsense2_bringup,
         gpio_board_bringup,
         auto_docking_bringup,
+        joy_node,
+        teleop_joy_node
     ])
