@@ -111,6 +111,23 @@ def generate_launch_description():
         ]
     )
 
+    auto_docking_bringup = Node(
+        package="former_auto_docking",
+        executable="auto_docking_node",
+        respawn=True,
+        parameters=[
+            {"distance_approach": 0.260},
+        ],
+        remappings=[
+            ('odom', 'base_controller/odom'),
+            ('cmd_vel', 'base_controller/cmd_vel_unstamped')
+        ],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        }
+    )
+
     gpio_board_bringup = Node(
         package="former_gpio_board",
         executable="main_node",
@@ -122,10 +139,7 @@ def generate_launch_description():
         output={
             "stdout": "screen",
             "stderr": "screen",
-        },
-        remappings=[
-            ('front_lidar/scan', 'scan')
-        ]
+        }
     )
 
     imu_bringup = Node(
@@ -171,4 +185,5 @@ def generate_launch_description():
         imu_bringup,
         realsense2_bringup,
         gpio_board_bringup,
+        auto_docking_bringup,
     ])
