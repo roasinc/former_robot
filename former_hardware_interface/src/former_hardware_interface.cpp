@@ -124,7 +124,31 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
     rclcpp::sleep_for(std::chrono::milliseconds(100));
 
     ser_.Write("^ECHOF 1\r"); // Disable Serial ECHO
-    rclcpp::sleep_for(std::chrono::milliseconds(100));
+    rclcpp::sleep_for(std::chrono::milliseconds(200));
+
+    RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "Wait connection to Motor Driver");
+    while(rclcpp::ok())
+    {
+        ser_.Write("?FID\r"); // Disable Serial ECHO
+        rclcpp::sleep_for(std::chrono::milliseconds(100));
+
+        try
+        {
+            std::string recv_version;
+            ser_.ReadLine(recv_version, '\r', 500);
+
+            if(recv_version[0] == 'F' && recv_version[1] == 'I' && recv_version[2] == 'D')
+            {
+                RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "Connected %s", recv_version.c_str());
+                break;
+            }
+        }
+        catch(LibSerial::ReadTimeout &e)
+        {
+            assert(false);
+        }
+        rclcpp::sleep_for(std::chrono::milliseconds(300));
+    }
 
     ser_.Write("!R 2\r"); // Restart Script
     rclcpp::sleep_for(std::chrono::milliseconds(2000));
