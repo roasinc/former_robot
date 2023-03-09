@@ -111,6 +111,23 @@ def generate_launch_description():
         ]
     )
 
+    gpio_board_bringup = Node(
+        package="former_gpio_board",
+        executable="main_node",
+        respawn=True,
+        parameters=[
+            {"port_name": "/dev/ttyARDUINO"},
+            {"baudrate": 115200},
+        ],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        },
+        remappings=[
+            ('front_lidar/scan', 'scan')
+        ]
+    )
+
     imu_bringup = Node(
         package="imu_xg6000_ros2",
         executable="main_node",
@@ -150,7 +167,8 @@ def generate_launch_description():
             ]
         ),
         # robot_localization_node,
-        # lidar_bringup,
-        # imu_bringup,
-        # realsense2_bringup,
+        lidar_bringup,
+        imu_bringup,
+        realsense2_bringup,
+        gpio_board_bringup,
     ])

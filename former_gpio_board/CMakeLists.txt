@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(former_interfaces)
+project(former_gpio_board)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -7,29 +7,21 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(former_interfaces REQUIRED)
 
-set(msg_files
-  "msg/RobotFeedback.msg"
+add_executable(main_node src/main_node.cpp)
+ament_target_dependencies(main_node sensor_msgs former_interfaces std_msgs rclcpp)
+target_link_libraries(main_node
+  serial
 )
 
-set(srv_files
-  "srv/SetLamp.srv"
+install(TARGETS
+  main_node
+  DESTINATION lib/${PROJECT_NAME}
 )
-
-set(action_files
-  "action/Docking.action"
-)
-
-rosidl_generate_interfaces(${PROJECT_NAME}
-  ${msg_files}
-  ${srv_files}
-  ${action_files}
-  DEPENDENCIES std_msgs
-)
-
-ament_export_dependencies(rosidl_default_runtime)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
