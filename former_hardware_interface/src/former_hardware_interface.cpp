@@ -151,7 +151,11 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
     }
 
     ser_.Write("!R 2\r"); // Restart Script
-    rclcpp::sleep_for(std::chrono::milliseconds(2000));
+    rclcpp::sleep_for(std::chrono::milliseconds(1000));
+    ser_.FlushIOBuffers();
+
+    ser_.Write("!B 3 1\r");
+    rclcpp::sleep_for(std::chrono::milliseconds(100));
     ser_.FlushIOBuffers();
 
     RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "Successfully initialized!");
@@ -381,11 +385,13 @@ hardware_interface::return_type FormerSystemHardwareInterface::write(const rclcp
 
     if(enable_motor_state_ == 1.0 && estop_button_state_ == 0 && enable_motor_cmd_ == 1.0)
     {
-        cmd_str = boost::format("!G 1 %1%_!G 2 %2%}\r") % cmd_l_motor % cmd_r_motor;
+        cmd_str = boost::format("!G 1 %1%_!G 2 %2%\r") % cmd_l_motor % cmd_r_motor;
         RCLCPP_DEBUG(rclcpp::get_logger("FormerSystemHardwareInterface"), "%s", cmd_str.str().c_str());
     }
 
     ser_.Write(cmd_str.str());
+    ser_.DrainWriteBuffer();
+    ser_.Write("!B 3 1\r");
     ser_.DrainWriteBuffer();
     ser_.FlushIOBuffers();
 
