@@ -236,16 +236,11 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_activate(co
 hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_deactivate(const rclcpp_lifecycle::State& /*previous_state*/)
 {
     RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "on_deactivate");
+    // stop motor driver
 
     ser_.Write("!EX\r");
     rclcpp::sleep_for(std::chrono::milliseconds(10));
-    std::string ret;
-    ser_.ReadLine(ret, '\r', 100);
-    // stop motor driver
-
-    // ser_.Write("!R 0\r"); // Stop Script from START
-    // rclcpp::sleep_for(std::chrono::milliseconds(100));
-    // ser_.FlushIOBuffers();
+    ser_.FlushIOBuffers();
 
     return CallbackReturn::SUCCESS;
 }
