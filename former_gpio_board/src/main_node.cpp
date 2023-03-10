@@ -60,6 +60,9 @@ class FormerGPIOBoardNode : public rclcpp::Node
 
             auto period = std::chrono::duration<double>(1.0 / this->get_parameter("rate").as_double());
             timer_ = this->create_wall_timer(period, std::bind(&FormerGPIOBoardNode::timer_callback, this));
+
+
+            last_lamp_color_ = 3;
             RCLCPP_INFO(this->get_logger(), "Initialized...");
         }
 

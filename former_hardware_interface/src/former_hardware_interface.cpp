@@ -145,6 +145,7 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
         }
         catch(LibSerial::ReadTimeout &e)
         {
+            rclcpp::sleep_for(std::chrono::milliseconds(2000));
             assert(false);
         }
         rclcpp::sleep_for(std::chrono::milliseconds(300));

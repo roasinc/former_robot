@@ -70,22 +70,22 @@ def generate_launch_description():
         respawn=True,
     )
 
-    load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'joint_state_broadcaster'],
-        output='screen'
+    load_joint_state_broadcaster = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
-    load_base_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'base_controller'],
-        output='screen'
+    load_base_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["base_controller", "--controller-manager", "/controller_manager"],
     )
 
-    load_former_io_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'former_io_controller'],
-        output='screen'
+    load_former_io_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["former_io_controller", "--controller-manager", "/controller_manager"],
     )
 
     lidar_bringup = Node(
@@ -198,14 +198,10 @@ def generate_launch_description():
     return LaunchDescription([
         use_sim_time,
         upload_robot,
-        GroupAction(
-            actions=[
-                control_node,
-                load_joint_state_broadcaster,
-                load_base_controller,
-                load_former_io_controller,
-            ]
-        ),
+        control_node,
+        load_joint_state_broadcaster,
+        load_base_controller,
+        load_former_io_controller,
         # robot_localization_node,
         lidar_bringup,
         imu_bringup,
