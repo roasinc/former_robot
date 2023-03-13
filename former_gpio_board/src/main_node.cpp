@@ -12,6 +12,7 @@
 #include "sensor_msgs/msg/range.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "former_interfaces/srv/set_lamp.hpp"
+#include "former_interfaces/msg/robot_feedback.hpp"
 
 
 using namespace std::chrono_literals;
@@ -31,8 +32,11 @@ class FormerGPIOBoardNode : public rclcpp::Node
             auto baudrate = this->get_parameter("baudrate").get_parameter_value().get<long int>();
             RCLCPP_INFO(this->get_logger(), "Port: [%s] and baudrate %ld", port_name.c_str(), baudrate);
 
-            last_lamp_color_ = 0;
-            last_lamp_mode_ = 2;
+            feedback_lamp_color_ = 99;
+            feedback_lamp_mode_ = 99;
+            req_lamp_color_ = 5;
+            req_lamp_mode_ = 2;
+            is_estop_pressed_ = false;
 
             // open serial port, initialize
             try
@@ -47,22 +51,22 @@ class FormerGPIOBoardNode : public rclcpp::Node
             }
 
             ser_.SetBaudRate(LibSerial::BaudRate::BAUD_115200);
-            rclcpp::sleep_for(std::chrono::milliseconds(1500));
+            rclcpp::sleep_for(std::chrono::milliseconds(500));
             ser_.FlushIOBuffers();
 
             pub_l_sonar_range_ = this->create_publisher<sensor_msgs::msg::Range>("l_sonar_range", 10);
             pub_r_sonar_range_ = this->create_publisher<sensor_msgs::msg::Range>("r_sonar_range", 10);
             pub_dock_state_ = this->create_publisher<std_msgs::msg::Bool>("dock_state", 10);
 
+            sub_robot_feedback_ = this->create_subscription<former_interfaces::msg::RobotFeedback>(
+                "former_io_controller/robot_feedback", 10, std::bind(&FormerGPIOBoardNode::callback_robot_feedback, this, std::placeholders::_1));
+
             srv_set_lamp_ = this->create_service<former_interfaces::srv::SetLamp>("set_lamp",
                                         std::bind(&FormerGPIOBoardNode::set_lamp_callback, this, _1, _2));
-
 
             auto period = std::chrono::duration<double>(1.0 / this->get_parameter("rate").as_double());
             timer_ = this->create_wall_timer(period, std::bind(&FormerGPIOBoardNode::timer_callback, this));
 
-
-            last_lamp_color_ = 3;
             RCLCPP_INFO(this->get_logger(), "Initialized...");
         }
 
@@ -71,9 +75,12 @@ class FormerGPIOBoardNode : public rclcpp::Node
     private:
         void timer_callback()
         {
-            auto lamp_command_str = boost::format("!C:%1%:\r!M:%2%:\r") % last_lamp_color_ % last_lamp_mode_;
-            ser_.Write(lamp_command_str.str());
-            ser_.DrainWriteBuffer();
+            if(req_lamp_color_ != feedback_lamp_color_ || req_lamp_mode_ != feedback_lamp_mode_)
+            {
+                auto lamp_command_str = boost::format("!C:%1%:\r!M:%2%:\r") % req_lamp_color_ % req_lamp_mode_;
+                ser_.Write(lamp_command_str.str());
+                ser_.DrainWriteBuffer();
+            }
 
             try
             {
@@ -81,12 +88,15 @@ class FormerGPIOBoardNode : public rclcpp::Node
                 ser_.DrainWriteBuffer();
 
                 std::string recv_data;
-                ser_.ReadLine(recv_data, '\n', 50);
+                ser_.ReadLine(recv_data, '\n', 20);
 
                 // IO:114:110:0:
                 auto data = recv_data.substr(3);
                 std::vector<std::string> data_array;
                 boost::split(data_array, data, boost::algorithm::is_any_of(":"));
+
+                feedback_lamp_color_ = atoi(data_array[3].c_str());
+                feedback_lamp_mode_ = atoi(data_array[4].c_str());
 
                 auto l_sonar_msg = sensor_msgs::msg::Range();
                 l_sonar_msg.header.frame_id = "l_sonar_sensor";
@@ -124,8 +134,8 @@ class FormerGPIOBoardNode : public rclcpp::Node
         {
             if(req->color <= 5 && req->mode <= 2)
             {
-                last_lamp_color_ = req->color;
-                last_lamp_mode_ = req->mode;
+                req_lamp_color_ = req->color;
+                req_lamp_mode_ = req->mode;
 
                 res->success = true;
             }
@@ -136,15 +146,43 @@ class FormerGPIOBoardNode : public rclcpp::Node
             }
         }
 
+        void callback_robot_feedback(const former_interfaces::msg::RobotFeedback & msg)
+        {
+            if(msg.estop_button && !is_estop_pressed_)
+            {
+                last_lamp_color_ = feedback_lamp_color_;
+                last_lamp_mode_ = feedback_lamp_mode_;
+
+                req_lamp_color_ = 2;
+                req_lamp_mode_ = 1;
+
+                is_estop_pressed_ = true;
+            }
+            else if(!msg.estop_button && is_estop_pressed_)
+            {
+                req_lamp_color_ = last_lamp_color_;
+                req_lamp_mode_ = last_lamp_mode_;
+
+                is_estop_pressed_ = false;
+            }
+        }
+
     private:
         rclcpp::TimerBase::SharedPtr timer_;
         LibSerial::SerialPort ser_;
+        int feedback_lamp_color_;
+        int req_lamp_color_;
+        int feedback_lamp_mode_;
+        int req_lamp_mode_;
+
         int last_lamp_color_;
         int last_lamp_mode_;
+        bool is_estop_pressed_;
 
         rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr pub_l_sonar_range_;
         rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr pub_r_sonar_range_;
         rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr pub_dock_state_;
+        rclcpp::Subscription<former_interfaces::msg::RobotFeedback>::SharedPtr sub_robot_feedback_;
 
         rclcpp::Service<former_interfaces::srv::SetLamp>::SharedPtr srv_set_lamp_;
 };
