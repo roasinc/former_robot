@@ -44,18 +44,18 @@ class FormerAutoDockingNode: public rclcpp::Node
             data_cached_ = false;
             is_docked_n_charging_ = false;
 
-            this->declare_parameter("bearing_variance", 1e-5);
-            this->declare_parameter("range_variance", 0.012);
-            this->declare_parameter("least_sq_angle_threshold", 0.0001);
-            this->declare_parameter("least_sq_radius_threshold ", 0.0001);
-            this->declare_parameter("max_line_gap", 0.5);
-            this->declare_parameter("mine_line_length", 0.1);
-            this->declare_parameter("min_range", 0.5);
-            this->declare_parameter("max_range", 250.0);
-            this->declare_parameter("min_split_distance", 0.03);
-            this->declare_parameter("outlier_distance", 0.06);
-            this->declare_parameter("min_line_points", 10);
-            this->declare_parameter("distance_approach", 0.265);
+            this->declare_parameter<double>("bearing_variance", 1e-5);
+            this->declare_parameter<double>("range_variance", 0.012);
+            this->declare_parameter<double>("least_sq_angle_threshold", 0.0001);
+            this->declare_parameter<double>("least_sq_radius_threshold", 0.0001);
+            this->declare_parameter<double>("max_line_gap", 0.5);
+            this->declare_parameter<double>("mine_line_length", 0.1);
+            this->declare_parameter<double>("min_range", 0.5);
+            this->declare_parameter<double>("max_range", 250.0);
+            this->declare_parameter<double>("min_split_distance", 0.03);
+            this->declare_parameter<double>("outlier_distance", 0.06);
+            this->declare_parameter<uint16_t>("min_line_points", 10);
+            this->declare_parameter<double>("distance_approach", 0.265);
 
             line_extraction_.setBearingVariance(pow(this->get_parameter("bearing_variance").get_parameter_value().get<double>(), 2));
             line_extraction_.setRangeVariance(pow(this->get_parameter("range_variance").get_parameter_value().get<double>(), 2));

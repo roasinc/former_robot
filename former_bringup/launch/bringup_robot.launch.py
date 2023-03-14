@@ -1,14 +1,18 @@
+import os
+
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument
+from launch.actions import DeclareLaunchArgument, GroupAction
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.substitutions import FindPackageShare
+from launch.event_handlers import OnExecutionComplete
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, Command
 
 def generate_launch_description():
-    ld = LaunchDescription()
+    # ld = LaunchDescription()
+    use_sim_time = DeclareLaunchArgument("use_sim_time", default_value="false")
 
     upload_robot = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -37,10 +41,10 @@ def generate_launch_description():
         name='ekf_filter_node',
         output='screen',
         parameters=[
-            os.path.join(
+            PathJoinSubstitution([
                 FindPackageShare('former_bringup'),
                 'config/ekf.yaml'
-            ),
+            ]),
             {'use_sim_time': LaunchConfiguration('use_sim_time')}
         ],
     )
@@ -63,23 +67,147 @@ def generate_launch_description():
             "stdout": "screen",
             "stderr": "screen",
         },
+        respawn=True,
     )
 
-    load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'joint_state_broadcaster'],
-        output='screen'
+    load_joint_state_broadcaster = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
     )
 
-    load_base_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-                'base_controller'],
-        output='screen'
+    load_base_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["base_controller", "--controller-manager", "/controller_manager"],
     )
 
-    ld.add_action(upload_robot)
-    ld.add_action(control_node)
-    ld.add_action(load_joint_state_broadcaster)
-    ld.add_action(robot_localization_node)
-    ld.add_action(load_base_controller)
-    return ld
+    load_former_io_controller = Node(
+        package="controller_manager",
+        executable="spawner",
+        arguments=["former_io_controller", "--controller-manager", "/controller_manager"],
+    )
+
+    lidar_bringup = Node(
+        package="sick_scan",
+        executable="sick_generic_caller",
+        respawn=True,
+        arguments=[
+            'scanner_type:=sick_tim_5xx',
+            'hostname:=192.168.10.11',
+            'frame_id:=laser_link',
+            'min_ang:=-2.0',
+            'max_ang:=2.0',
+            'nodename:=front_lidar',
+            'range_min:=0.05',
+            'sw_pll_only_publish:=false',
+        ],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        },
+        remappings=[
+            ('front_lidar/scan', 'scan')
+        ]
+    )
+
+    auto_docking_bringup = Node(
+        package="former_auto_docking",
+        executable="auto_docking_node",
+        respawn=True,
+        parameters=[
+            {"distance_approach": 0.260},
+        ],
+        remappings=[
+            ('odom', 'base_controller/odom'),
+            ('cmd_vel', 'base_controller/cmd_vel_unstamped')
+        ],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        }
+    )
+
+    gpio_board_bringup = Node(
+        package="former_gpio_board",
+        executable="main_node",
+        respawn=True,
+        parameters=[
+            {"port_name": "/dev/ttyARDUINO"},
+            {"baudrate": 115200},
+        ],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        }
+    )
+
+    imu_bringup = Node(
+        package="imu_xg6000_ros2",
+        executable="main_node",
+        respawn=True,
+        parameters=[
+            {'port_name': '/dev/ttyIMU'},
+            {'baudrate': 38400},
+            {'frame_id': 'imu_link'},
+        ],
+        output={
+            "stdout": "screen",
+            "stderr": "screen",
+        }
+    )
+
+    realsense2_bringup = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            get_package_share_directory('realsense2_camera'),
+            '/launch/rs_launch.py']
+        ),
+        launch_arguments = {
+            'pointcloud.enable': "true",
+            'align_depth': "true",
+            'pointcloud': "true",
+        }.items()
+    )
+
+    joy_node = Node(
+        package='joy',
+        executable='joy_node',
+        name='joy_node',
+        parameters=[{
+            'dev': '/dev/js0',
+            'deadzone': 0.3,
+            'autorepeat_rate': 20.0,
+        }],
+    )
+
+    teleop_joy_node = Node(
+        package='teleop_twist_joy',
+        executable='teleop_node',
+        name='teleop_twist_joy_node',
+        parameters=[
+            PathJoinSubstitution([
+                FindPackageShare('former_bringup'),
+                'config/ps5.config.yaml'
+            ]),
+        ],
+        remappings=[
+            ('cmd_vel', 'base_controller/cmd_vel_unstamped')
+        ]
+    )
+
+    return LaunchDescription([
+        use_sim_time,
+        upload_robot,
+        control_node,
+        load_joint_state_broadcaster,
+        load_base_controller,
+        load_former_io_controller,
+        # robot_localization_node,
+        lidar_bringup,
+        imu_bringup,
+        realsense2_bringup,
+        gpio_board_bringup,
+        auto_docking_bringup,
+        joy_node,
+        teleop_joy_node
+    ])

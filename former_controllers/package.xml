@@ -1,19 +1,23 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>former_bringup</name>
+  <name>former_controllers</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="byeongkyu@todo.todo">byeongkyu</maintainer>
+  <maintainer email="root@todo.todo">root</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
-  <depend>ros2_control</depend>
-  <depend>ros2_controllers</depend>
-  <depend>rviz_imu_plugin</depend>
-  <depend>robot_localization</depend>
-  <depend>imu_xg6000_ros2</depend>
-  <depend>realsense2_camera</depend>
+
+  <depend>former_interfaces</depend>
+  <depend>controller_interface</depend>
+  <depend>lifecycle_msgs</depend>
+  <depend>pluginlib</depend>
+  <depend>rclcpp_lifecycle</depend>
+  <depend>rcutils</depend>
+  <depend>realtime_tools</depend>
+  <depend>std_msgs</depend>
+  <depend>std_srvs</depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

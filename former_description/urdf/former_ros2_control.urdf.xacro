@@ -10,8 +10,8 @@
             <xacro:unless value="$(arg use_gazebo_sim)">
                 <hardware>
                     <plugin>former_hardware_interface/FormerSystemHardwareInterface</plugin>
-                    <param name="port_name">/dev/ttyUSB0</param>
-                    <param name="baudrate">921600</param>
+                    <param name="port_name">/dev/ttyMOTOR</param>
+                    <param name="baudrate">115200</param>
                 </hardware>
             </xacro:unless>
 
@@ -23,6 +23,7 @@
 
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
+                <state_interface name="effort"/>
             </joint>
 
             <joint name="r_wheel_joint">
@@ -33,7 +34,21 @@
 
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
+                <state_interface name="effort"/>
             </joint>
+
+            <gpio name="gpio">
+                <command_interface name="set_enable_motor"/>
+                <state_interface name="motor_enabled"/>
+                <state_interface name="estop_button_state"/>
+                <state_interface name="system_voltage"/>
+                <state_interface name="charging_voltage"/>
+                <state_interface name="user_power_current1"/>
+                <state_interface name="user_power_current2"/>
+                <state_interface name="curent_temperature"/>
+                <state_interface name="fault_flags"/>
+            </gpio>
+
         </ros2_control>
     </xacro:macro>
 </robot>

@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 50
+    update_rate: 40
     use_sim_time: false
 
     joint_state_broadcaster:
@@ -8,6 +8,9 @@ controller_manager:
 
     base_controller:
       type: diff_drive_controller/DiffDriveController
+
+    former_io_controller:
+      type: former_controllers/GPIOController
 
 base_controller:
   ros__parameters:
@@ -17,7 +20,7 @@ base_controller:
 
     wheel_separation: 0.3
     wheels_per_side: 1
-    wheel_radius: 0.0845
+    wheel_radius: 0.085
 
     wheel_separation_multiplier: 1.0
     left_wheel_radius_multiplier: 1.0
@@ -42,15 +45,15 @@ base_controller:
     linear.x.has_jerk_limits: false
     linear.x.max_velocity: 1.5
     linear.x.min_velocity: -1.5
-    linear.x.max_acceleration: 2.0
+    linear.x.max_acceleration: 2.5
     # linear.x.max_jerk: 0.0
     # linear.x.min_jerk: 0.0
 
     angular.z.has_velocity_limits: true
     angular.z.has_acceleration_limits: true
     angular.z.has_jerk_limits: false
-    angular.z.max_velocity: 1.5
-    angular.z.min_velocity: -1.0
+    angular.z.max_velocity: 2.5
+    angular.z.min_velocity: -2.5
     angular.z.max_acceleration: 2.0
     angular.z.min_acceleration: -2.0
     # angular.z.max_jerk: 0.0
