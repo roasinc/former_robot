@@ -1,0 +1,4 @@
+KERNEL=="ttyUSB[0-9]*", MODE="0666", TAG+="systemd", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{devpath}=="4.2", SYMLINK+="ttyMOTOR", RUN+="/bin/setserial /dev/%k low_latency"
+KERNEL=="ttyUSB[0-9]*", MODE="0666", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6001", ATTRS{devpath}=="4.1", SYMLINK+="ttyARDUINO", RUN+="/bin/setserial /dev/%k low_latency"
+KERNEL=="ttyUSB[0-9]*", MODE="0666", ATTRS{idVendor}=="0403", ATTRS{idProduct}=="6015", SYMLINK+="ttyIMU"
+SUBSYSTEMS=="usb", ATTRS{idVendor}=="8086", ATTRS{idProduct}=="0b07", MODE:="0666", GROUP:="plugdev", TAG+="systemd"

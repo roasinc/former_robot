@@ -2,10 +2,10 @@
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
   <name>former_bringup</name>
-  <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="byeongkyu@todo.todo">byeongkyu</maintainer>
-  <license>TODO: License declaration</license>
+  <version>0.0.1</version>
+  <description>The former_bringup package</description>
+  <maintainer email="byeongkyu@gmail.com">byeongkyu</maintainer>
+  <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
   <depend>ros2_control</depend>

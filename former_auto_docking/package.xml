@@ -4,7 +4,7 @@
   <name>former_auto_docking</name>
   <version>0.0.0</version>
   <description>former_auto_docking</description>
-  <maintainer email="bkahn@roas.co.kr">byeongkyu</maintainer>
+  <maintainer email="byeongkyu@gmail.com">byeongkyu</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

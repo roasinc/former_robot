@@ -4,7 +4,7 @@
   <name>former_gazebo</name>
   <version>0.0.0</version>
   <description>The former_gazebo package</description>
-  <maintainer email="bkahn@roas.co.kr">byeongkyu</maintainer>
+  <maintainer email="byeongkyu@gmail.com">byeongkyu</maintainer>
   <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

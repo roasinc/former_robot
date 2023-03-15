@@ -1,1 +1,1 @@
-- git: {local-name: gazebo_ros_pkgs, uri: 'https://github.com/byeongkyu/gazebo_ros_pkgs.git', version: ros2-fix-model-path}
+- git: {local-name: imu_xg6000_ros2, uri: 'https://github.com/byeongkyu/imu_xg6000_ros2.git', version: main}
