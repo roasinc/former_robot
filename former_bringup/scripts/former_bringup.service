@@ -1,0 +1,12 @@
+[Unit]
+Requires=dev-ttyARDUINO.device dev-ttyIMU.device dev-ttyMOTOR.device dev-video0.device
+After=dev-ttyARDUINO.device dev-ttyIMU.device dev-ttyMOTOR.device dev-video0.device
+
+[Service]
+RemainAfterExit=yes
+ExecStart=/usr/bin/nvidia-docker run -d --rm -i --runtime=nvidia --name=former_robot --network=host --env ROS_DOMAIN_ID=7 --privileged -v /dev:/dev -v /home/former/dev_ws/src:/root/dev_ws/src:z former_humble:1.0 ros2 launch former_bringup bringup_robot.launch.py
+ExecStop=/usr/bin/nvidia-docker stop former_robot
+
+
+[Install]
+WantedBy=multi-user.target

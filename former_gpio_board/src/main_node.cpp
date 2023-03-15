@@ -75,28 +75,55 @@ class FormerGPIOBoardNode : public rclcpp::Node
     private:
         void timer_callback()
         {
-            if(req_lamp_color_ != feedback_lamp_color_ || req_lamp_mode_ != feedback_lamp_mode_)
+            if(req_lamp_color_ != feedback_lamp_color_)
             {
-                auto lamp_command_str = boost::format("!C:%1%:\r!M:%2%:\r") % req_lamp_color_ % req_lamp_mode_;
-                ser_.Write(lamp_command_str.str());
+                RCLCPP_INFO(this->get_logger(), "Color changed...");
+
+                std::vector<uint8_t> send_color {0xfa, 0xfe, 0x1, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
+                send_color[3] = req_lamp_color_;
+                uint16_t sum = 0;
+                for(int i = 0; i < 4; i++)
+                {
+                    sum += send_color[2 + i];
+                }
+                send_color[6] = (uint8_t)sum;
+                ser_.Write(send_color);
+                ser_.DrainWriteBuffer();
+            }
+            if(req_lamp_mode_ != feedback_lamp_mode_)
+            {
+                RCLCPP_INFO(this->get_logger(), "Mode changed... %d %d ", req_lamp_mode_, feedback_lamp_mode_);
+
+                std::vector<uint8_t> send_mode {0xfa, 0xfe, 0x2, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
+                send_mode[3] = req_lamp_mode_;
+                uint16_t sum = 0;
+                for(int i = 0; i < 4; i++)
+                {
+                    sum += send_mode[2 + i];
+                }
+                send_mode[6] = (uint8_t)sum;
+                ser_.Write(send_mode);
                 ser_.DrainWriteBuffer();
             }
 
             try
             {
-                ser_.Write("!F:\r");
+                ser_.FlushIOBuffers();
+
+                std::vector<uint8_t> send_req {0xfa, 0xfe, 0x3, 0x1, 0x4, 0xfa, 0xfd};
+                ser_.Write(send_req);
                 ser_.DrainWriteBuffer();
 
-                std::string recv_data;
-                ser_.ReadLine(recv_data, '\n', 20);
+                std::vector<uint8_t> recv_buf(14, 0);
+                ser_.Read(recv_buf, 14, 20);
 
-                // IO:114:110:0:
-                auto data = recv_data.substr(3);
-                std::vector<std::string> data_array;
-                boost::split(data_array, data, boost::algorithm::is_any_of(":"));
+                if(recv_buf[2] != 0x93)
+                {
+                    return;
+                }
 
-                feedback_lamp_color_ = atoi(data_array[3].c_str());
-                feedback_lamp_mode_ = atoi(data_array[4].c_str());
+                feedback_lamp_color_ = recv_buf[8];
+                feedback_lamp_mode_ = recv_buf[9];
 
                 auto l_sonar_msg = sensor_msgs::msg::Range();
                 l_sonar_msg.header.frame_id = "l_sonar_sensor";
@@ -105,7 +132,7 @@ class FormerGPIOBoardNode : public rclcpp::Node
                 l_sonar_msg.field_of_view = 9.0 / 180.0 * M_PI;
                 l_sonar_msg.min_range = 0.01;
                 l_sonar_msg.max_range = 2.0;
-                l_sonar_msg.range = (atof(data_array[0].c_str()) * 6.0 - 300.0) / 1000.0;
+                l_sonar_msg.range =  ((uint16_t)((recv_buf[3] << 8) + (recv_buf[4])) * 6.0 - 300.0) / 1000.0;
 
                 auto r_sonar_msg = sensor_msgs::msg::Range();
                 r_sonar_msg.header.frame_id = "r_sonar_sensor";
@@ -114,10 +141,10 @@ class FormerGPIOBoardNode : public rclcpp::Node
                 r_sonar_msg.field_of_view = 9.0 / 180.0 * M_PI;
                 r_sonar_msg.min_range = 0.01;
                 r_sonar_msg.max_range = 2.0;
-                r_sonar_msg.range = (atof(data_array[1].c_str()) * 6.0 - 300.0) / 1000.0;
+                r_sonar_msg.range = ((uint16_t)((recv_buf[5] << 8) + (recv_buf[6])) * 6.0 - 300.0) / 1000.0;
 
                 auto dock_state_msg = std_msgs::msg::Bool();
-                dock_state_msg.data = atoi(data_array[2].c_str()) == 0 ? false : true;
+                dock_state_msg.data = recv_buf[7] == 0 ? false : true;
 
                 pub_l_sonar_range_->publish(l_sonar_msg);
                 pub_r_sonar_range_->publish(r_sonar_msg);
@@ -186,8 +213,6 @@ class FormerGPIOBoardNode : public rclcpp::Node
 
         rclcpp::Service<former_interfaces::srv::SetLamp>::SharedPtr srv_set_lamp_;
 };
-
-
 
 int main(int argc, char * argv[])
 {

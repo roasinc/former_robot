@@ -4,8 +4,8 @@
   <name>former_description</name>
   <version>0.0.0</version>
   <description>The URDF for Former robot platform</description>
-  <maintainer email="bkahn@roas.co.kr">byeongkyu</maintainer>
-  <license>BSD-3-Clause</license>
+  <maintainer email="byeongkyu@gmail.com">byeongkyu</maintainer>
+  <license>BSD</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
