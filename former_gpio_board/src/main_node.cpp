@@ -128,7 +128,7 @@ class FormerGPIOBoardNode : public rclcpp::Node
 
             if(req_lamp_color_ != feedback_lamp_color_)
             {
-                RCLCPP_INFO(this->get_logger(), "Color changed...");
+                RCLCPP_INFO(this->get_logger(), "Color changed from %d to %d...", req_lamp_color_, feedback_lamp_color_);
 
                 std::vector<uint8_t> send_color {0xfa, 0xfe, 0x1, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
                 send_color[3] = req_lamp_color_;
@@ -143,7 +143,7 @@ class FormerGPIOBoardNode : public rclcpp::Node
             }
             if(req_lamp_mode_ != feedback_lamp_mode_)
             {
-                RCLCPP_INFO(this->get_logger(), "Mode changed... %d %d ", req_lamp_mode_, feedback_lamp_mode_);
+                RCLCPP_INFO(this->get_logger(), "Mode changed from %d to %d ", req_lamp_mode_, feedback_lamp_mode_);
 
                 std::vector<uint8_t> send_mode {0xfa, 0xfe, 0x2, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
                 send_mode[3] = req_lamp_mode_;
