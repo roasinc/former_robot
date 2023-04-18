@@ -35,7 +35,7 @@ class FormerGPIOBoardNode : public rclcpp::Node
             feedback_lamp_color_ = 99;
             feedback_lamp_mode_ = 99;
             req_lamp_color_ = 5;
-            req_lamp_mode_ = 2;
+            req_lamp_mode_ = 1;
             is_estop_pressed_ = false;
 
             // open serial port, initialize
@@ -51,8 +51,8 @@ class FormerGPIOBoardNode : public rclcpp::Node
             }
 
             ser_.SetBaudRate(LibSerial::BaudRate::BAUD_115200);
-            rclcpp::sleep_for(std::chrono::milliseconds(500));
-            ser_.FlushIOBuffers();
+            rclcpp::sleep_for(std::chrono::milliseconds(2000));
+            // ser_.FlushIOBuffers();
 
             pub_l_sonar_range_ = this->create_publisher<sensor_msgs::msg::Range>("l_sonar_range", 10);
             pub_r_sonar_range_ = this->create_publisher<sensor_msgs::msg::Range>("r_sonar_range", 10);
@@ -75,47 +75,16 @@ class FormerGPIOBoardNode : public rclcpp::Node
     private:
         void timer_callback()
         {
-            if(req_lamp_color_ != feedback_lamp_color_)
-            {
-                RCLCPP_INFO(this->get_logger(), "Color changed...");
-
-                std::vector<uint8_t> send_color {0xfa, 0xfe, 0x1, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
-                send_color[3] = req_lamp_color_;
-                uint16_t sum = 0;
-                for(int i = 0; i < 4; i++)
-                {
-                    sum += send_color[2 + i];
-                }
-                send_color[6] = (uint8_t)sum;
-                ser_.Write(send_color);
-                ser_.DrainWriteBuffer();
-            }
-            if(req_lamp_mode_ != feedback_lamp_mode_)
-            {
-                RCLCPP_INFO(this->get_logger(), "Mode changed... %d %d ", req_lamp_mode_, feedback_lamp_mode_);
-
-                std::vector<uint8_t> send_mode {0xfa, 0xfe, 0x2, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
-                send_mode[3] = req_lamp_mode_;
-                uint16_t sum = 0;
-                for(int i = 0; i < 4; i++)
-                {
-                    sum += send_mode[2 + i];
-                }
-                send_mode[6] = (uint8_t)sum;
-                ser_.Write(send_mode);
-                ser_.DrainWriteBuffer();
-            }
-
             try
             {
-                ser_.FlushIOBuffers();
+                // ser_.FlushIOBuffers();
 
                 std::vector<uint8_t> send_req {0xfa, 0xfe, 0x3, 0x1, 0x4, 0xfa, 0xfd};
                 ser_.Write(send_req);
                 ser_.DrainWriteBuffer();
 
                 std::vector<uint8_t> recv_buf(14, 0);
-                ser_.Read(recv_buf, 14, 20);
+                ser_.Read(recv_buf, 14, 100);
 
                 if(recv_buf[2] != 0x93)
                 {
@@ -152,7 +121,40 @@ class FormerGPIOBoardNode : public rclcpp::Node
             }
             catch(LibSerial::ReadTimeout &e)
             {
+                // RCLCPP_INFO(this->get_logger(), "%d...", ser_.GetNumberOfBytesAvailable());
+                // RCLCPP_INFO(this->get_logger(), "Timeout...");
                 return;
+            }
+
+            if(req_lamp_color_ != feedback_lamp_color_)
+            {
+                RCLCPP_INFO(this->get_logger(), "Color changed...");
+
+                std::vector<uint8_t> send_color {0xfa, 0xfe, 0x1, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
+                send_color[3] = req_lamp_color_;
+                uint16_t sum = 0;
+                for(int i = 0; i < 4; i++)
+                {
+                    sum += send_color[2 + i];
+                }
+                send_color[6] = (uint8_t)sum;
+                ser_.Write(send_color);
+                ser_.DrainWriteBuffer();
+            }
+            if(req_lamp_mode_ != feedback_lamp_mode_)
+            {
+                RCLCPP_INFO(this->get_logger(), "Mode changed... %d %d ", req_lamp_mode_, feedback_lamp_mode_);
+
+                std::vector<uint8_t> send_mode {0xfa, 0xfe, 0x2, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
+                send_mode[3] = req_lamp_mode_;
+                uint16_t sum = 0;
+                for(int i = 0; i < 4; i++)
+                {
+                    sum += send_mode[2 + i];
+                }
+                send_mode[6] = (uint8_t)sum;
+                ser_.Write(send_mode);
+                ser_.DrainWriteBuffer();
             }
         }
 
