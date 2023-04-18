@@ -35,8 +35,9 @@ class FormerGPIOBoardNode : public rclcpp::Node
             feedback_lamp_color_ = 99;
             feedback_lamp_mode_ = 99;
             req_lamp_color_ = 5;
-            req_lamp_mode_ = 1;
+            req_lamp_mode_ = 2;
             is_estop_pressed_ = false;
+            watchdog_count_ = 0;
 
             // open serial port, initialize
             try
@@ -123,12 +124,15 @@ class FormerGPIOBoardNode : public rclcpp::Node
             {
                 // RCLCPP_INFO(this->get_logger(), "%d...", ser_.GetNumberOfBytesAvailable());
                 // RCLCPP_INFO(this->get_logger(), "Timeout...");
+                watchdog_count_++;
+                assert(watchdog_count_ < 8);
                 return;
             }
+            watchdog_count_ = 0;
 
             if(req_lamp_color_ != feedback_lamp_color_)
             {
-                RCLCPP_INFO(this->get_logger(), "Color changed from %d to %d...", req_lamp_color_, feedback_lamp_color_);
+                RCLCPP_INFO(this->get_logger(), "Color changed from %d to %d...", feedback_lamp_color_, req_lamp_color_);
 
                 std::vector<uint8_t> send_color {0xfa, 0xfe, 0x1, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
                 send_color[3] = req_lamp_color_;
@@ -143,7 +147,7 @@ class FormerGPIOBoardNode : public rclcpp::Node
             }
             if(req_lamp_mode_ != feedback_lamp_mode_)
             {
-                RCLCPP_INFO(this->get_logger(), "Mode changed from %d to %d ", req_lamp_mode_, feedback_lamp_mode_);
+                RCLCPP_INFO(this->get_logger(), "Mode changed from %d to %d ", feedback_lamp_mode_, req_lamp_mode_);
 
                 std::vector<uint8_t> send_mode {0xfa, 0xfe, 0x2, 0x0, 0x0, 0x3, 0x0, 0xfa, 0xfd};
                 send_mode[3] = req_lamp_mode_;
@@ -207,6 +211,7 @@ class FormerGPIOBoardNode : public rclcpp::Node
         int last_lamp_color_;
         int last_lamp_mode_;
         bool is_estop_pressed_;
+        int watchdog_count_;
 
         rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr pub_l_sonar_range_;
         rclcpp::Publisher<sensor_msgs::msg::Range>::SharedPtr pub_r_sonar_range_;

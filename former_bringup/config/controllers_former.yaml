@@ -46,6 +46,7 @@ base_controller:
     linear.x.max_velocity: 1.5
     linear.x.min_velocity: -1.5
     linear.x.max_acceleration: 2.5
+    linear.x.min_acceleration: -2.5
     # linear.x.max_jerk: 0.0
     # linear.x.min_jerk: 0.0
 

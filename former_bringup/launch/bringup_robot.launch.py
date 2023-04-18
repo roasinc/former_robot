@@ -96,8 +96,8 @@ def generate_launch_description():
             'scanner_type:=sick_tim_5xx',
             'hostname:=192.168.10.11',
             'frame_id:=laser_link',
-            'min_ang:=-2.0',
-            'max_ang:=2.0',
+            # 'min_ang:=-1.0',  // ERROR: Need setting in launch file
+            # 'max_ang:=1.0',  // ERROR Need setting in launch file
             'nodename:=front_lidar',
             'range_min:=0.05',
             'sw_pll_only_publish:=false',
@@ -157,18 +157,6 @@ def generate_launch_description():
         }
     )
 
-    realsense2_bringup = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            get_package_share_directory('realsense2_camera'),
-            '/launch/rs_launch.py']
-        ),
-        launch_arguments = {
-            'pointcloud.enable': "true",
-            'align_depth': "true",
-            'pointcloud': "true",
-        }.items()
-    )
-
     joy_node = Node(
         package='joy',
         executable='joy_node',
@@ -202,10 +190,9 @@ def generate_launch_description():
         load_joint_state_broadcaster,
         load_base_controller,
         load_former_io_controller,
-        # robot_localization_node,
+        # # robot_localization_node,
         lidar_bringup,
         imu_bringup,
-        realsense2_bringup,
         gpio_board_bringup,
         auto_docking_bringup,
         joy_node,

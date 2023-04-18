@@ -152,12 +152,22 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
     }
 
     ser_.Write("!R 2\r"); // Restart Script
-    rclcpp::sleep_for(std::chrono::milliseconds(1000));
+    ser_.DrainWriteBuffer();
+    rclcpp::sleep_for(std::chrono::milliseconds(3000));
     ser_.FlushIOBuffers();
 
     ser_.Write("!B 3 1\r");
+    ser_.DrainWriteBuffer();
     rclcpp::sleep_for(std::chrono::milliseconds(100));
     ser_.FlushIOBuffers();
+
+    ser_.Write("!AC 1 160000\r");
+    ser_.DrainWriteBuffer();
+    rclcpp::sleep_for(std::chrono::milliseconds(100));
+    ser_.Write("!AC 2 160000\r");
+    ser_.DrainWriteBuffer();
+    rclcpp::sleep_for(std::chrono::milliseconds(100));
+
 
     RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "Successfully initialized!");
     return CallbackReturn::SUCCESS;
