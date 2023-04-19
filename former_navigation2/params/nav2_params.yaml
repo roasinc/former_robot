@@ -61,6 +61,7 @@ bt_navigator:
     - nav2_follow_path_action_bt_node
     - nav2_spin_action_bt_node
     - nav2_wait_action_bt_node
+    - nav2_assisted_teleop_action_bt_node
     - nav2_back_up_action_bt_node
     - nav2_drive_on_heading_bt_node
     - nav2_clear_costmap_service_bt_node
@@ -98,6 +99,7 @@ bt_navigator:
     - nav2_wait_cancel_bt_node
     - nav2_spin_cancel_bt_node
     - nav2_back_up_cancel_bt_node
+    - nav2_assisted_teleop_cancel_bt_node
     - nav2_drive_on_heading_cancel_bt_node
 
 bt_navigator_navigate_through_poses_rclcpp_node:
@@ -111,13 +113,13 @@ bt_navigator_navigate_to_pose_rclcpp_node:
 controller_server:
   ros__parameters:
     use_sim_time: True
-    controller_frequency: 10.0
+    controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
     min_theta_velocity_threshold: 0.001
     failure_tolerance: 0.3
     progress_checker_plugin: "progress_checker"
-    goal_checker_plugins: ["general_goal_checker"] # "precise_goal_checker"
+    goal_checker_plugins: ["general_goal_checker"]
     controller_plugins: ["FollowPath"]
 
     # Progress checker parameters
@@ -125,18 +127,13 @@ controller_server:
       plugin: "nav2_controller::SimpleProgressChecker"
       required_movement_radius: 0.5
       movement_time_allowance: 10.0
+
     # Goal checker parameters
-    #precise_goal_checker:
-    #  plugin: "nav2_controller::SimpleGoalChecker"
-    #  xy_goal_tolerance: 0.25
-    #  yaw_goal_tolerance: 0.25
-    #  stateful: True
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
       xy_goal_tolerance: 0.25
-      yaw_goal_tolerance: 0.25
-    # DWB parameters
+      yaw_goal_tolerance: 0.15
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
       debug_trajectory_details: True
@@ -144,20 +141,20 @@ controller_server:
       min_vel_y: 0.0
       max_vel_x: 0.8
       max_vel_y: 0.0
-      max_vel_theta: 1.2
+      max_vel_theta: 2.0
       min_speed_xy: 0.0
       max_speed_xy: 0.8
       min_speed_theta: 0.0
       acc_lim_x: 1.6
       acc_lim_y: 0.0
-      acc_lim_theta: 2.0
+      acc_lim_theta: 3.2
       decel_lim_x: -1.6
       decel_lim_y: 0.0
-      decel_lim_theta: -2.0
+      decel_lim_theta: -3.2
       vx_samples: 20
       vy_samples: 5
       vtheta_samples: 20
-      sim_time: 2.0
+      sim_time: 1.1
       linear_granularity: 0.05
       angular_granularity: 0.025
       transform_tolerance: 0.2
@@ -168,14 +165,15 @@ controller_server:
       critics: ["RotateToGoal", "Oscillation", "BaseObstacle", "GoalAlign", "PathAlign", "PathDist", "GoalDist"]
       BaseObstacle.scale: 0.02
       PathAlign.scale: 32.0
-      PathAlign.forward_point_distance: 0.1
       GoalAlign.scale: 24.0
+      PathAlign.forward_point_distance: 0.1
       GoalAlign.forward_point_distance: 0.1
       PathDist.scale: 32.0
       GoalDist.scale: 24.0
       RotateToGoal.scale: 32.0
       RotateToGoal.slowing_factor: 5.0
       RotateToGoal.lookahead_time: -1.0
+
 
 local_costmap:
   local_costmap:
@@ -229,7 +227,8 @@ global_costmap:
       global_frame: map
       robot_base_frame: base_footprint
       use_sim_time: True
-      robot_radius: 0.25
+      # robot_radius: 0.25
+      footprint: '[[0.22, 0.22], [0.22, -0.22], [-0.22, -0.22], [-0.22, 0.22]]'
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
@@ -279,7 +278,7 @@ planner_server:
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
       tolerance: 0.5
-      use_astar: false
+      use_astar: true
       allow_unknown: true
 
 smoother_server:
@@ -335,11 +334,11 @@ velocity_smoother:
     use_sim_time: True
     smoothing_frequency: 20.0
     scale_velocities: False
-    feedback: "CLOSED_LOOP"
-    max_velocity: [0.8, 0.0, 1.4]
-    min_velocity: [-0.8, 0.0, -1.4]
-    max_accel: [1.6, 0.0, 2.4]
-    max_decel: [-1.6, 0.0, -2.4]
+    feedback: "OPEN_LOOP"
+    max_velocity: [0.8, 0.0, 1.6]
+    min_velocity: [-0.8, 0.0, -1.6]
+    max_accel: [2.0, 0.0, 3.2]
+    max_decel: [-2.0, 0.0, -3.2]
     odom_topic: "base_controller/odom"
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]

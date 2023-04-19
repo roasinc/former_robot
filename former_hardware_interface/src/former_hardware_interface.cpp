@@ -161,10 +161,16 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
     rclcpp::sleep_for(std::chrono::milliseconds(100));
     ser_.FlushIOBuffers();
 
-    ser_.Write("!AC 1 160000\r");
+    ser_.Write("!MAC 1 160000\r");
     ser_.DrainWriteBuffer();
     rclcpp::sleep_for(std::chrono::milliseconds(100));
-    ser_.Write("!AC 2 160000\r");
+    ser_.Write("!MAC 2 160000\r");
+    ser_.DrainWriteBuffer();
+    rclcpp::sleep_for(std::chrono::milliseconds(100));
+    ser_.Write("!MDEC 1 160000\r");
+    ser_.DrainWriteBuffer();
+    rclcpp::sleep_for(std::chrono::milliseconds(100));
+    ser_.Write("!MDEC 2 160000\r");
     ser_.DrainWriteBuffer();
     rclcpp::sleep_for(std::chrono::milliseconds(100));
 
