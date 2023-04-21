@@ -311,7 +311,7 @@
         </joint>
 
         <xacro:sensor_d435i parent="${prefix}base_link" name="${prefix}camera" use_nominal_extrinsics="false">
-            <origin xyz="0.1777 0 0.06715" rpy="0 ${-12.5*pi/180} 0"/>
+            <origin xyz="0.1777 0 0.06715" rpy="0 ${-15*pi/180} 0"/>
         </xacro:sensor_d435i>
 
         <!-- <link name="${prefix}camera_depth_frame"/>

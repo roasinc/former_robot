@@ -91,9 +91,12 @@ def generate_launch_description():
     lidar_bringup = Node(
         package="sick_scan",
         executable="sick_generic_caller",
-        respawn=True,
+        respawn=False,
         arguments=[
-            'scanner_type:=sick_tim_5xx',
+            PathJoinSubstitution([
+                FindPackageShare('sick_scan'),
+                'launch/sick_tim_5xx.launch'
+            ]),
             'hostname:=192.168.10.11',
             'frame_id:=laser_link',
             # 'min_ang:=-1.0',  // ERROR: Need setting in launch file
