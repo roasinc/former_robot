@@ -12,6 +12,8 @@
                     <plugin>former_hardware_interface/FormerSystemHardwareInterface</plugin>
                     <param name="port_name">/dev/ttyMOTOR</param>
                     <param name="baudrate">115200</param>
+                    <param name="robot_acceleration">6000</param>
+                    <param name="robot_deceleration">6000</param>
                 </hardware>
             </xacro:unless>
 

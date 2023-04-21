@@ -151,9 +151,14 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
         rclcpp::sleep_for(std::chrono::milliseconds(300));
     }
 
+    auto robot_acc = std::stof(info_.hardware_parameters["robot_acceleration"]);
+    auto robot_dec = std::stof(info_.hardware_parameters["robot_deceleration"]);
+    RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "Get robot_acceleration [%6.1f] RPM/s", robot_acc / 10.0);
+    RCLCPP_INFO(rclcpp::get_logger("FormerSystemHardwareInterface"), "Get robot_deceleration [%6.1f] RPM/s", robot_dec / 10.0);
+
     ser_.Write("!R 2\r"); // Restart Script
     ser_.DrainWriteBuffer();
-    rclcpp::sleep_for(std::chrono::milliseconds(3000));
+    rclcpp::sleep_for(std::chrono::milliseconds(1000));
     ser_.FlushIOBuffers();
 
     ser_.Write("!B 3 1\r");
@@ -161,16 +166,22 @@ hardware_interface::CallbackReturn FormerSystemHardwareInterface::on_init(const 
     rclcpp::sleep_for(std::chrono::milliseconds(100));
     ser_.FlushIOBuffers();
 
-    ser_.Write("!MAC 1 160000\r");
+
+    auto conf_str = boost::format("!AC 1 %1%\r") % int(robot_acc);
+    ser_.Write(conf_str.str());
     ser_.DrainWriteBuffer();
     rclcpp::sleep_for(std::chrono::milliseconds(100));
-    ser_.Write("!MAC 2 160000\r");
+    conf_str = boost::format("!AC 2 %1%\r") % int(robot_acc);
+    ser_.Write(conf_str.str());
     ser_.DrainWriteBuffer();
     rclcpp::sleep_for(std::chrono::milliseconds(100));
-    ser_.Write("!MDEC 1 160000\r");
+
+    conf_str = boost::format("!DC 1 %1%\r") % int(robot_dec);
+    ser_.Write(conf_str.str());
     ser_.DrainWriteBuffer();
     rclcpp::sleep_for(std::chrono::milliseconds(100));
-    ser_.Write("!MDEC 2 160000\r");
+    conf_str = boost::format("!DC 2 %1%\r") % int(robot_dec);
+    ser_.Write(conf_str.str());
     ser_.DrainWriteBuffer();
     rclcpp::sleep_for(std::chrono::milliseconds(100));
 
