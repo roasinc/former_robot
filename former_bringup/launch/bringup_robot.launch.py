@@ -91,7 +91,7 @@ def generate_launch_description():
     lidar_bringup = Node(
         package="sick_scan",
         executable="sick_generic_caller",
-        respawn=False,
+        respawn=True,
         arguments=[
             PathJoinSubstitution([
                 FindPackageShare('sick_scan'),
