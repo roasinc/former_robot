@@ -17,7 +17,7 @@ def generate_launch_description():
 
     declare_slam_params_file_cmd = DeclareLaunchArgument(
         'slam_params_file',
-        default_value=os.path.join(get_package_share_directory("former_nav2"),
+        default_value=os.path.join(get_package_share_directory("former_navigation2"),
                                     'config', 'mapper_params.yaml'),
     )
 

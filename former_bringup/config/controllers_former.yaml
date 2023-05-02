@@ -18,7 +18,7 @@ base_controller:
     right_wheel_names: ["r_wheel_joint"]
     write_op_modes: ["motor_controller"]
 
-    wheel_separation: 0.3
+    wheel_separation: 0.305
     wheels_per_side: 1
     wheel_radius: 0.085
 
@@ -46,6 +46,7 @@ base_controller:
     linear.x.max_velocity: 1.5
     linear.x.min_velocity: -1.5
     linear.x.max_acceleration: 2.5
+    linear.x.min_acceleration: -2.5
     # linear.x.max_jerk: 0.0
     # linear.x.min_jerk: 0.0
 
@@ -54,7 +55,7 @@ base_controller:
     angular.z.has_jerk_limits: false
     angular.z.max_velocity: 2.5
     angular.z.min_velocity: -2.5
-    angular.z.max_acceleration: 2.0
-    angular.z.min_acceleration: -2.0
+    angular.z.max_acceleration: 3.2
+    angular.z.min_acceleration: -3.2
     # angular.z.max_jerk: 0.0
     # angular.z.min_jerk: 0.0

@@ -55,7 +55,8 @@ def generate_launch_description():
     #              https://github.com/ros2/launch_ros/issues/56
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static'),
-                  ('/cmd_vel', '/base_controller/cmd_vel_unstamped')]
+                #   ('/cmd_vel', '/base_controller/cmd_vel_unstamped')
+    ]
 
     # Create our own temporary YAML files that include substitutions
     param_substitutions = {
@@ -91,7 +92,7 @@ def generate_launch_description():
         description='Automatically startup the nav2 stack')
 
     declare_use_composition_cmd = DeclareLaunchArgument(
-        'use_composition', default_value='False',
+        'use_composition', default_value='True',
         description='Use composed bringup if True')
 
     declare_container_name_cmd = DeclareLaunchArgument(
@@ -237,7 +238,10 @@ def generate_launch_description():
                 name='velocity_smoother',
                 parameters=[configured_params],
                 remappings=remappings +
-                           [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
+                           [
+                                ('cmd_vel', 'cmd_vel_nav'),
+                                ('cmd_vel_smoothed', '/base_controller/cmd_vel_unstamped')
+                            ]),
             ComposableNode(
                 package='nav2_lifecycle_manager',
                 plugin='nav2_lifecycle_manager::LifecycleManager',
