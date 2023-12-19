@@ -1,17 +1,16 @@
 import os
 
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, GroupAction
+from launch.actions import DeclareLaunchArgument, GroupAction, LogInfo
 from launch.actions import ExecuteProcess, IncludeLaunchDescription, RegisterEventHandler
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
 from ament_index_python.packages import get_package_share_directory
 from launch_ros.substitutions import FindPackageShare
-from launch.event_handlers import OnExecutionComplete
+from launch.event_handlers import OnExecutionComplete, OnProcessStart, OnProcessExit
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration, Command
 
 def generate_launch_description():
-    # ld = LaunchDescription()
     use_sim_time = DeclareLaunchArgument("use_sim_time", default_value="false")
 
     upload_robot = IncludeLaunchDescription(
@@ -56,18 +55,20 @@ def generate_launch_description():
         ]
     )
 
-    control_node = Node(
+    control_manager_node = Node(
         package="controller_manager",
         executable="ros2_control_node",
         parameters=[
-            robot_description,
             robot_controllers
             ],
         output={
             "stdout": "screen",
             "stderr": "screen",
         },
-        respawn=True,
+        respawn=False,
+        remappings=[
+            ('~/robot_description', '/robot_description')
+        ]
     )
 
     load_joint_state_broadcaster = Node(
@@ -89,18 +90,18 @@ def generate_launch_description():
     )
 
     lidar_bringup = Node(
-        package="sick_scan",
+        package="sick_scan_xd",
         executable="sick_generic_caller",
         respawn=True,
         arguments=[
             PathJoinSubstitution([
-                FindPackageShare('sick_scan'),
+                FindPackageShare('sick_scan_xd'),
                 'launch/sick_tim_5xx.launch'
             ]),
             'hostname:=192.168.10.11',
             'frame_id:=laser_link',
-            # 'min_ang:=-1.0',  // ERROR: Need setting in launch file
-            # 'max_ang:=1.0',  // ERROR Need setting in launch file
+            'min_ang:=-1.85',
+            'max_ang:=1.85',
             'nodename:=front_lidar',
             'range_min:=0.05',
             'sw_pll_only_publish:=false',
@@ -146,13 +147,15 @@ def generate_launch_description():
     )
 
     imu_bringup = Node(
-        package="imu_xg6000_ros2",
+        package="mw_ahrs_ros2",
         executable="main_node",
+        name='imu_node',
         respawn=True,
         parameters=[
             {'port_name': '/dev/ttyIMU'},
-            {'baudrate': 38400},
+            {'baudrate': 921600},
             {'frame_id': 'imu_link'},
+            {'rate': 100.0},
         ],
         output={
             "stdout": "screen",
@@ -189,10 +192,28 @@ def generate_launch_description():
     return LaunchDescription([
         use_sim_time,
         upload_robot,
-        control_node,
-        load_joint_state_broadcaster,
-        load_base_controller,
-        load_former_io_controller,
+        control_manager_node,
+        RegisterEventHandler(
+            OnProcessStart(
+                target_action=control_manager_node,
+                on_start=[
+                    LogInfo(msg='control_manager_node started, spawn controllers'),
+                    load_joint_state_broadcaster,
+                ]
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_broadcaster,
+                on_exit=[load_base_controller],
+            )
+        ),
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_base_controller,
+                on_exit=[load_former_io_controller],
+            )
+        ),
         # # robot_localization_node,
         lidar_bringup,
         imu_bringup,
