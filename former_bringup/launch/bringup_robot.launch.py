@@ -163,6 +163,20 @@ def generate_launch_description():
         }
     )
 
+    realsense2_bringup = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            get_package_share_directory('realsense2_camera'),
+            '/launch/rs_launch.py']
+        ),
+        launch_arguments = {
+            'enable_sync': 'true',
+            'pointcloud.enable': 'true',
+            'decimation_filter.enable': 'true',
+            'rgb_camera.profile': '640,480,30',
+            'depth_module.profile': '640,480,30',
+        }.items()
+    )
+
     joy_node = Node(
         package='joy',
         executable='joy_node',
@@ -219,6 +233,7 @@ def generate_launch_description():
         imu_bringup,
         gpio_board_bringup,
         auto_docking_bringup,
+        realsense2_bringup,
         joy_node,
         teleop_joy_node
     ])
