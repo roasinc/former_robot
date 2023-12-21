@@ -98,7 +98,8 @@
                 <collision>
                     <origin xyz="0 0 0" rpy="0 0 ${dir*pi/2}"/>
                     <geometry>
-                        <mesh filename="package://former_description/meshes/collision/main_wheel.stl" scale="1 1 1"/>
+                        <!-- <mesh filename="package://former_description/meshes/collision/main_wheel.stl" scale="1 1 1"/> -->
+                        <sphere radius="0.0845"/>
                     </geometry>
                 </collision>
                 <inertial>
@@ -114,6 +115,7 @@
                 <child link="${prefix}_wheel"/>
                 <axis xyz="0 1 0"/>
                 <origin xyz="0 ${dir*0.051} 0" rpy="0 0 0"/>
+                <dynamics damping="0.2"/>
             </joint>
         </xacro:macro>
 

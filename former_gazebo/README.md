@@ -2,17 +2,13 @@
 
 Gazebo simulation package for former robot
 
-Gazebo version: Gazebo Classic (Gazebo-11)
+Gazebo version: Gazebo Fortrees
 
 ## Usage
 
 ```shell
-$ ros2 launch former_gazebo bringup.launch.py world_name:=office_building.world
+$ ros2 launch former_gazebo bringup.launch.py
 ```
-
-<center><img width="80%" src="../docs/former_gazebo.jpg"/></center>
-
-<br/>
 
 ## Control
 

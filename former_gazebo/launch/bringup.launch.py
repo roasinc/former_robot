@@ -3,8 +3,8 @@ from os import environ
 from os import pathsep
 
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, DeclareLaunchArgument, Shutdown, IncludeLaunchDescription, RegisterEventHandler, SetEnvironmentVariable
-from launch.event_handlers import OnProcessExit
+from launch.actions import ExecuteProcess, DeclareLaunchArgument, Shutdown, IncludeLaunchDescription, RegisterEventHandler, SetEnvironmentVariable, LogInfo
+from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import EnvironmentVariable, LaunchConfiguration, Command, PathJoinSubstitution
 from launch_ros.actions import Node
@@ -13,39 +13,29 @@ from pathlib import Path
 
 def generate_launch_description():
     robot_name = DeclareLaunchArgument("robot_name", default_value="former")
-    world_name = DeclareLaunchArgument("world_name", default_value="empty.world")
+    world_name = DeclareLaunchArgument("world_name", default_value="default.sdf")
 
-    environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '0'
-    environ['GAZEBO_MODEL_DATABASE_URI'] = ''
+    environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
+    # package_path = get_package_share_directory('former_gazebo')
+    # gazebo_model_paths += pathsep + package_path + "/models"
 
-    gazebo_model_paths = '/usr/share/gazebo-11/models'
+    model_path = get_package_share_directory('former_description')
+    model_path = model_path[:len(model_path) - len('former_description')]
 
-    package_path = get_package_share_directory('former_gazebo')
-    gazebo_model_paths += pathsep + package_path + "/models"
+    environ['IGN_GAZEBO_RESOURCE_PATH'] = model_path
 
-    environ['GAZEBO_MODEL_PATH'] = gazebo_model_paths
-
-    gz_server = IncludeLaunchDescription(
+    gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
-            get_package_share_directory('gazebo_ros'),
-            '/launch/gzserver.launch.py'
+            get_package_share_directory('ros_gz_sim'),
+            '/launch/gz_sim.launch.py'
         ]),
         launch_arguments={
-            "verbose": "true",
-            "physics": "ode",
-            "world": PathJoinSubstitution([
-                        get_package_share_directory('former_gazebo'),
-                        'worlds',
-                        LaunchConfiguration('world_name'),
-            ])
-        }.items(),
-    )
-
-    gz_client = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource([
-            get_package_share_directory('gazebo_ros'),
-            '/launch/gzclient.launch.py'
-        ]),
+            "gz_args": [
+                '-r -v2',
+                ' ',
+                LaunchConfiguration('world_name')
+            ]
+        }.items()
     )
 
     upload_robot = IncludeLaunchDescription(
@@ -59,35 +49,51 @@ def generate_launch_description():
     )
 
     spawn_robot = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        name='spawn_robot',
-        output='screen',
+        package='ros_gz_sim',
+        executable='create',
+        output='both',
         arguments=[
-            '-entity', LaunchConfiguration('robot_name'),
-            '-topic', 'robot_description',
-            '-timeout', '20.0',
-            '-x', '-5.0',
-            '-y', '-3.0',
-            '-package_to_model'
+            '-name', LaunchConfiguration('robot_name'),
+            '-topic', 'robot_description'
         ],
         parameters=[{
             "use_sim_time": True
         }],
     )
 
-    robot_localization_node = Node(
-        package='robot_localization',
-        executable='ekf_node',
-        name='ekf_filter_node',
-        output='screen',
-        parameters=[
-            os.path.join(
-                get_package_share_directory('former_bringup'),
-                'config/ekf.yaml'
-            ),
-            {'use_sim_time': True}
+    # robot_localization_node = Node(
+    #     package='robot_localization',
+    #     executable='ekf_node',
+    #     name='ekf_filter_node',
+    #     output='screen',
+    #     parameters=[
+    #         os.path.join(
+    #             get_package_share_directory('former_bringup'),
+    #             'config/ekf.yaml'
+    #         ),
+    #         {'use_sim_time': True}
+    #     ],
+    # )
+
+    gz_bridge = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '/clock@rosgraph_msgs/msg/Clock[ignition.msgs.Clock',
+            '/scan@sensor_msgs/msg/LaserScan@ignition.msgs.LaserScan',
+            '/camera/camera_info@sensor_msgs/msg/CameraInfo@ignition.msgs.CameraInfo',
         ],
+        output='screen'
+    )
+
+    gz_image_bridge = Node(
+        package='ros_gz_image',
+        executable='image_bridge',
+        arguments=[
+            '/camera/image',
+            '/camera/depth_image'
+        ],
+        output='screen'
     )
 
     load_joint_state_controller = ExecuteProcess(
@@ -103,6 +109,12 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
+        robot_name,
+        world_name,
+        gz_bridge,
+        upload_robot,
+        gz_sim,
+        spawn_robot,
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=spawn_robot,
@@ -115,11 +127,7 @@ def generate_launch_description():
                 on_exit=[load_base_controller],
             )
         ),
-        robot_name,
-        world_name,
-        gz_server,
-        gz_client,
-        upload_robot,
-        robot_localization_node,
-        spawn_robot,
+        gz_image_bridge,
+        # robot_localization_node,
+
     ])

@@ -208,7 +208,7 @@ def generate_launch_description():
         upload_robot,
         control_manager_node,
         RegisterEventHandler(
-            OnProcessStart(
+            event_handler=OnProcessStart(
                 target_action=control_manager_node,
                 on_start=[
                     LogInfo(msg='control_manager_node started, spawn controllers'),

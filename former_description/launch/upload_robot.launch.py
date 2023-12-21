@@ -29,6 +29,7 @@ def generate_launch_description():
                     ]),
                     ' use_gazebo_sim:=', LaunchConfiguration('use_gazebo_sim')
                 ]),
+            'use_time_time': LaunchConfiguration('use_gazebo_sim'),
         }]
     )
 
