@@ -33,7 +33,7 @@ $ wstool update
 
 ### Install packages for dependencies
 ```shell
-$ cd ~/dev_ws/src
+$ cd ~/dev_ws
 $ rosdep install --from-paths src --ignore-src -r -y
 ```
 
