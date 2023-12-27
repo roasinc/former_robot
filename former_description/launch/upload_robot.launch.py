@@ -12,6 +12,7 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     use_gazebo_sim = DeclareLaunchArgument("use_gazebo_sim", default_value="false")
+    tf_prefix = DeclareLaunchArgument("tf_prefix", default_value="")
 
     rsp_node = Node(
         package='robot_state_publisher',
@@ -27,7 +28,9 @@ def generate_launch_description():
                         get_package_share_directory('former_description'),
                         'urdf/robot.urdf.xacro',
                     ]),
-                    ' use_gazebo_sim:=', LaunchConfiguration('use_gazebo_sim')
+                    ' use_gazebo_sim:=', LaunchConfiguration('use_gazebo_sim'),
+                    ' tf_prefix:=', LaunchConfiguration('tf_prefix'),
+
                 ]),
             'use_time_time': LaunchConfiguration('use_gazebo_sim'),
         }]

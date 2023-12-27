@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <xacro:macro name="insert_ros2_control" params="name use_gazebo_sim:=^|false">
+    <xacro:macro name="insert_ros2_control" params="name prefix use_gazebo_sim:=^|false">
         <ros2_control name="${name}" type="system">
             <xacro:if value="$(arg use_gazebo_sim)">
                 <hardware>
@@ -17,7 +17,7 @@
                 </hardware>
             </xacro:unless>
 
-            <joint name="l_wheel_joint">
+            <joint name="${prefix}l_wheel_joint">
                 <command_interface name="velocity">
                     <param name="min">-1</param>
                     <param name="max">1</param>
@@ -25,10 +25,10 @@
 
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <!-- <state_interface name="effort"/> -->
+                <state_interface name="effort"/>
             </joint>
 
-            <joint name="r_wheel_joint">
+            <joint name="${prefix}r_wheel_joint">
                 <command_interface name="velocity">
                     <param name="min">-1</param>
                     <param name="max">1</param>
@@ -36,11 +36,11 @@
 
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>
-                <!-- <state_interface name="effort"/> -->
+                <state_interface name="effort"/>
             </joint>
 
             <xacro:unless value="$(arg use_gazebo_sim)">
-                <gpio name="gpio">
+                <gpio name="${prefix}gpio">
                     <command_interface name="set_enable_motor"/>
                     <state_interface name="motor_enabled"/>
                     <state_interface name="estop_button_state"/>
