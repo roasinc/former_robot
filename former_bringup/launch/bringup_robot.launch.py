@@ -28,77 +28,77 @@ def generate_launch_description():
     )
 
     bringup_robot_group = GroupAction([
-            PushRosNamespace(
-                condition=IfCondition(LaunchConfiguration('use_namespace')),
-                namespace=LaunchConfiguration('namespace')
+        PushRosNamespace(
+            condition=IfCondition(LaunchConfiguration('use_namespace')),
+            namespace=LaunchConfiguration('namespace')
+        ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
+                get_package_share_directory('former_description'), '/launch/upload_robot.launch.py']
             ),
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource([
-                    get_package_share_directory('former_description'), '/launch/upload_robot.launch.py']
-                ),
-                launch_arguments = {
-                    'use_gazebo_sim': 'false',
-                    'tf_prefix': LaunchConfiguration('tf_prefix'),
+            launch_arguments = {
+                'use_gazebo_sim': 'false',
+                'namespace': LaunchConfiguration('namespcae'),
+                'tf_prefix': LaunchConfiguration('tf_prefix'),
 
-                }.items()
-            ),
-            # Node(
-            #     package='robot_localization',
-            #     executable='ekf_node',
-            #     name='ekf_filter_node',
-            #     output='screen',
-            #     parameters=[
-            #         PathJoinSubstitution([
-            #             FindPackageShare('former_bringup'),
-            #             'config/ekf.yaml'
-            #         ]),
-            #         {
-            #             'use_sim_time': LaunchConfiguration('use_sim_time')
-            #         }
-            #     ],
-            # ),
-            Node(
-                condition=IfCondition(LaunchConfiguration('use_namespace')),
-                package="controller_manager",
-                executable="ros2_control_node",
-                parameters=[
-                    ParameterFile(
-                        RewrittenYaml(
-                            source_file=robot_controllers,
-                            param_rewrites={},
-                            root_key=LaunchConfiguration('namespace')
-                        ),
-                        allow_substs=True
-                    )
-                ],
-                output={
-                    "stdout": "screen",
-                    "stderr": "screen",
-                },
-                respawn=False,
-                remappings=[
-                    ('~/robot_description', ['/', LaunchConfiguration('namespace'),'/robot_description'])
-                ]
-            ),
-            Node(
-                condition=UnlessCondition(LaunchConfiguration('use_namespace')),
-                package="controller_manager",
-                executable="ros2_control_node",
-                parameters=[
-                    robot_controllers
-                ],
-                output={
-                    "stdout": "screen",
-                    "stderr": "screen",
-                },
-                respawn=False,
-                remappings=[
-                    ('~/robot_description', '/robot_description')
-                ]
-            ),
+            }.items()
+        ),
+        # Node(
+        #     package='robot_localization',
+        #     executable='ekf_node',
+        #     name='ekf_filter_node',
+        #     output='screen',
+        #     parameters=[
+        #         PathJoinSubstitution([
+        #             FindPackageShare('former_bringup'),
+        #             'config/ekf.yaml'
+        #         ]),
+        #         {
+        #             'use_sim_time': LaunchConfiguration('use_sim_time')
+        #         }
+        #     ],
+        # ),
+        Node(
+            condition=IfCondition(LaunchConfiguration('use_namespace')),
+            package="controller_manager",
+            executable="ros2_control_node",
+            parameters=[
+                ParameterFile(
+                    RewrittenYaml(
+                        source_file=robot_controllers,
+                        param_rewrites={},
+                        root_key=LaunchConfiguration('namespace')
+                    ),
+                    allow_substs=True
+                )
+            ],
+            output={
+                "stdout": "screen",
+                "stderr": "screen",
+            },
+            respawn=False,
+            remappings=[
+                ('~/robot_description', ['/', LaunchConfiguration('namespace'),'/robot_description'])
+            ]
+        ),
+        Node(
+            condition=UnlessCondition(LaunchConfiguration('use_namespace')),
+            package="controller_manager",
+            executable="ros2_control_node",
+            parameters=[
+                robot_controllers
+            ],
+            output={
+                "stdout": "screen",
+                "stderr": "screen",
+            },
+            respawn=False,
+            remappings=[
+                ('~/robot_description', '/robot_description')
+            ]
+        ),
 
-        ]
-    )
+    ])
 
     ld = LaunchDescription()
 

@@ -7,8 +7,10 @@
     <xacro:include filename="$(find realsense2_description)/urdf/_d435i.urdf.xacro"/>
 
     <xacro:arg name="use_gazebo_sim" default="false"/>
+    <xacro:arg name="namespace" default=""/>
     <xacro:arg name="tf_prefix" default=""/>
 
     <xacro:insert_robot prefix="$(arg tf_prefix)"/>
+    <xacro:insert_gazebo prefix="$(arg tf_prefix)" namespace="$(arg namespace)"/>
     <xacro:insert_ros2_control name="former_system" prefix="$(arg tf_prefix)" use_gazebo_sim="$(arg use_gazebo_sim)"/>
 </robot>

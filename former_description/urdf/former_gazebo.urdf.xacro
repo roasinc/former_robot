@@ -1,280 +1,284 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
-    <gazebo>
-        <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-            <parameters>$(find former_bringup)/config/controllers_former_gazebo.yaml</parameters>
-        </plugin>
-        <plugin filename="ignition-gazebo-sensors-system" name="gz::sim::systems::Sensors">
-            <render_engine>ogre2</render_engine>
-        </plugin>
-        <plugin filename="ignition-gazebo-imu-system" name="gz::sim::systems::Imu">
-        </plugin>
-        <plugin filename="ignition-gazebo-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster">
-        </plugin>
+    <xacro:macro name="insert_gazebo" params="namespace prefix">
+        <gazebo>
+            <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+                <parameters>$(find former_bringup)/config/controllers_former_gazebo.yaml</parameters>
+                <ros>
+                    <namespace>${namespace}</namespace>
+                </ros>
+            </plugin>
+            <plugin filename="ignition-gazebo-sensors-system" name="gz::sim::systems::Sensors">
+                <render_engine>ogre2</render_engine>
+            </plugin>
+            <plugin filename="ignition-gazebo-imu-system" name="gz::sim::systems::Imu">
+            </plugin>
+            <plugin filename="ignition-gazebo-scene-broadcaster-system" name="gz::sim::systems::SceneBroadcaster">
+            </plugin>
+        </gazebo>
 
-    </gazebo>
+        <gazebo reference="${prefix}l_wheel">
+            <mu1>200</mu1>
+            <mu2>200</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <!-- <minDepth>0.001</minDepth> -->
+        </gazebo>
 
-    <gazebo reference="l_wheel">
-        <mu1>200</mu1>
-        <mu2>200</mu2>
-        <kp>10000000.0</kp>
-        <kd>1.0</kd>
-        <!-- <minDepth>0.001</minDepth> -->
-    </gazebo>
+        <gazebo reference="${prefix}r_wheel">
+            <mu1>200</mu1>
+            <mu2>200</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <!-- <minDepth>0.001</minDepth> -->
+        </gazebo>
 
-    <gazebo reference="r_wheel">
-        <mu1>200</mu1>
-        <mu2>200</mu2>
-        <kp>10000000.0</kp>
-        <kd>1.0</kd>
-        <!-- <minDepth>0.001</minDepth> -->
-    </gazebo>
+        <gazebo reference="${prefix}f_l_caster_wheel">
+            <mu1>0.1</mu1>
+            <mu2>0.1</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <!-- <minDepth>0.001</minDepth> -->
+        </gazebo>
 
-    <gazebo reference="f_l_caster_wheel">
-        <mu1>0.1</mu1>
-        <mu2>0.1</mu2>
-        <kp>10000000.0</kp>
-        <kd>1.0</kd>
-        <!-- <minDepth>0.001</minDepth> -->
-    </gazebo>
+        <gazebo reference="${prefix}f_r_caster_wheel">
+            <mu1>0.1</mu1>
+            <mu2>0.1</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <!-- <minDepth>0.001</minDepth> -->
+        </gazebo>
 
-    <gazebo reference="f_r_caster_wheel">
-        <mu1>0.1</mu1>
-        <mu2>0.1</mu2>
-        <kp>10000000.0</kp>
-        <kd>1.0</kd>
-        <!-- <minDepth>0.001</minDepth> -->
-    </gazebo>
+        <gazebo reference="${prefix}r_l_caster_wheel">
+            <mu1>0.1</mu1>
+            <mu2>1</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <!-- <minDepth>0.001</minDepth> -->
+        </gazebo>
 
-    <gazebo reference="r_l_caster_wheel">
-        <mu1>0.1</mu1>
-        <mu2>1</mu2>
-        <kp>10000000.0</kp>
-        <kd>1.0</kd>
-        <!-- <minDepth>0.001</minDepth> -->
-    </gazebo>
+        <gazebo reference="${prefix}r_r_caster_wheel">
+            <mu1>0.1</mu1>
+            <mu2>0.1</mu2>
+            <kp>10000000.0</kp>
+            <kd>1.0</kd>
+            <!-- <minDepth>0.001</minDepth> -->
+        </gazebo>
 
-    <gazebo reference="r_r_caster_wheel">
-        <mu1>0.1</mu1>
-        <mu2>0.1</mu2>
-        <kp>10000000.0</kp>
-        <kd>1.0</kd>
-        <!-- <minDepth>0.001</minDepth> -->
-    </gazebo>
+        <gazebo reference="${prefix}l_wheel">
+            <self_collide>0</self_collide>
+        </gazebo>
 
-    <gazebo reference="l_wheel">
-        <self_collide>0</self_collide>
-    </gazebo>
+        <gazebo reference="${prefix}r_wheel">
+            <self_collide>0</self_collide>
+        </gazebo>
 
-    <gazebo reference="r_wheel">
-        <self_collide>0</self_collide>
-    </gazebo>
+        <gazebo reference="${prefix}base_footprint">
+            <self_collide>0</self_collide>
+        </gazebo>
 
-    <gazebo reference="base_footprint">
-        <self_collide>0</self_collide>
-    </gazebo>
-
-    <gazebo reference="laser_link">
-        <sensor name='gpu_lidar' type='gpu_lidar'>
-            <topic>scan</topic>
-            <update_rate>15</update_rate>
-            <lidar>
-                <scan>
-                    <horizontal>
-                        <samples>640</samples>
-                        <resolution>1</resolution>
-                        <min_angle>-1.85</min_angle>
-                        <max_angle>1.85</max_angle>
-                    </horizontal>
-                    <vertical>
-                        <samples>1</samples>
+        <gazebo reference="${prefix}laser_link">
+            <sensor name='gpu_lidar' type='gpu_lidar'>
+                <topic>${namespace}/scan</topic>
+                <update_rate>15</update_rate>
+                <lidar>
+                    <scan>
+                        <horizontal>
+                            <samples>640</samples>
+                            <resolution>1</resolution>
+                            <min_angle>-1.85</min_angle>
+                            <max_angle>1.85</max_angle>
+                        </horizontal>
+                        <vertical>
+                            <samples>1</samples>
+                            <resolution>0.01</resolution>
+                            <min_angle>0</min_angle>
+                            <max_angle>0</max_angle>
+                        </vertical>
+                    </scan>
+                    <range>
+                        <min>0.08</min>
+                        <max>15.0</max>
                         <resolution>0.01</resolution>
-                        <min_angle>0</min_angle>
-                        <max_angle>0</max_angle>
-                    </vertical>
-                </scan>
-                <range>
-                    <min>0.08</min>
-                    <max>15.0</max>
-                    <resolution>0.01</resolution>
-                </range>
-                <noise>
-                    <type>gaussian</type>
-                    <mean>0.0</mean>
-                    <stddev>0.01</stddev>
-                </noise>
-            </lidar>
+                    </range>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.01</stddev>
+                    </noise>
+                </lidar>
 
-            <alwaysOn>1</alwaysOn>
-            <visualize>true</visualize>
-        </sensor>
-    </gazebo>
+                <alwaysOn>1</alwaysOn>
+                <visualize>true</visualize>
+            </sensor>
+        </gazebo>
 
 
 
-    <!--
-    <gazebo reference="l_sonar_sensor">
-        <sensor name="l_sonar_sensor" type="ray">
-            <pose>0 0 0 0 0 0</pose>
-            <always_on>1</always_on>
-            <update_rate>10</update_rate>
-            <visualize>true</visualize>
-            <ray>
-                <scan>
-                    <horizontal>
-                        <samples>10</samples>
-                        <resolution>1.0</resolution>
-                        <min_angle>-0.1745</min_angle>
-                        <max_angle>0.1745</max_angle>
-                    </horizontal>
-                    <vertical>
-                        <samples>10</samples>
-                        <resolution>1.0</resolution>
-                        <min_angle>-0.1745</min_angle>
-                        <max_angle>0.1745</max_angle>
-                    </vertical>
-                </scan>
-                <range>
-                    <min>0.05</min>
-                    <max>2.0</max>
-                </range>
-            </ray>
+        <!--
+        <gazebo reference="l_sonar_sensor">
+            <sensor name="l_sonar_sensor" type="ray">
+                <pose>0 0 0 0 0 0</pose>
+                <always_on>1</always_on>
+                <update_rate>10</update_rate>
+                <visualize>true</visualize>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>10</samples>
+                            <resolution>1.0</resolution>
+                            <min_angle>-0.1745</min_angle>
+                            <max_angle>0.1745</max_angle>
+                        </horizontal>
+                        <vertical>
+                            <samples>10</samples>
+                            <resolution>1.0</resolution>
+                            <min_angle>-0.1745</min_angle>
+                            <max_angle>0.1745</max_angle>
+                        </vertical>
+                    </scan>
+                    <range>
+                        <min>0.05</min>
+                        <max>2.0</max>
+                    </range>
+                </ray>
 
-            <plugin name="l_sonar_sensor_plugin" filename="libgazebo_ros_ray_sensor.so">
-                <ros>
-                    <remapping>~/out:=l_sonar/range</remapping>
-                </ros>
-                <frame_name>l_sonar_sensor</frame_name>
-                <output_type>sensor_msgs/Range</output_type>
-            </plugin>
-        </sensor>
-    </gazebo>
+                <plugin name="l_sonar_sensor_plugin" filename="libgazebo_ros_ray_sensor.so">
+                    <ros>
+                        <remapping>~/out:=l_sonar/range</remapping>
+                    </ros>
+                    <frame_name>l_sonar_sensor</frame_name>
+                    <output_type>sensor_msgs/Range</output_type>
+                </plugin>
+            </sensor>
+        </gazebo>
 
-    <gazebo reference="r_sonar_sensor">
-        <sensor name="r_sonar_sensor" type="ray">
-            <pose>0 0 0 0 0 0</pose>
-            <always_on>1</always_on>
-            <update_rate>10</update_rate>
-            <visualize>true</visualize>
-            <ray>
-                <scan>
-                    <horizontal>
-                        <samples>10</samples>
-                        <resolution>1.0</resolution>
-                        <min_angle>-0.1745</min_angle>
-                        <max_angle>0.1745</max_angle>
-                    </horizontal>
-                    <vertical>
-                        <samples>10</samples>
-                        <resolution>1.0</resolution>
-                        <min_angle>-0.1745</min_angle>
-                        <max_angle>0.1745</max_angle>
-                    </vertical>
-                </scan>
-                <range>
-                    <min>0.05</min>
-                    <max>2.0</max>
-                </range>
-            </ray>
+        <gazebo reference="r_sonar_sensor">
+            <sensor name="r_sonar_sensor" type="ray">
+                <pose>0 0 0 0 0 0</pose>
+                <always_on>1</always_on>
+                <update_rate>10</update_rate>
+                <visualize>true</visualize>
+                <ray>
+                    <scan>
+                        <horizontal>
+                            <samples>10</samples>
+                            <resolution>1.0</resolution>
+                            <min_angle>-0.1745</min_angle>
+                            <max_angle>0.1745</max_angle>
+                        </horizontal>
+                        <vertical>
+                            <samples>10</samples>
+                            <resolution>1.0</resolution>
+                            <min_angle>-0.1745</min_angle>
+                            <max_angle>0.1745</max_angle>
+                        </vertical>
+                    </scan>
+                    <range>
+                        <min>0.05</min>
+                        <max>2.0</max>
+                    </range>
+                </ray>
 
-            <plugin name="r_sonar_sensor_plugin" filename="libgazebo_ros_ray_sensor.so">
-                <ros>
-                    <remapping>~/out:=r_sonar/range</remapping>
-                </ros>
-                <frame_name>r_sonar_sensor</frame_name>
-                <output_type>sensor_msgs/Range</output_type>
-            </plugin>
-        </sensor>
-    </gazebo>
-    -->
+                <plugin name="r_sonar_sensor_plugin" filename="libgazebo_ros_ray_sensor.so">
+                    <ros>
+                        <remapping>~/out:=r_sonar/range</remapping>
+                    </ros>
+                    <frame_name>r_sonar_sensor</frame_name>
+                    <output_type>sensor_msgs/Range</output_type>
+                </plugin>
+            </sensor>
+        </gazebo>
+        -->
 
-    <gazebo reference="imu_link">
-        <sensor name="imu" type="imu">
-            <always_on>1</always_on>
-            <update_rate>100</update_rate>
-            <visualize>true</visualize>
-            <topic>imu_raw</topic>
-            <enable_metrics>true</enable_metrics>
-            <imu>
-                <angular_velocity>
-                    <x>
-                        <noise type="gaussian">
-                            <mean>0.0</mean>
-                            <stddev>2e-4</stddev>
-                            <bias_mean>0.0000075</bias_mean>
-                            <bias_stddev>0.0000008</bias_stddev>
-                        </noise>
-                    </x>
-                    <y>
-                        <noise type="gaussian">
-                            <mean>0.0</mean>
-                            <stddev>2e-4</stddev>
-                            <bias_mean>0.0000075</bias_mean>
-                            <bias_stddev>0.0000008</bias_stddev>
-                        </noise>
-                    </y>
-                    <z>
-                        <noise type="gaussian">
-                            <mean>0.0</mean>
-                            <stddev>2e-4</stddev>
-                            <bias_mean>0.0000075</bias_mean>
-                            <bias_stddev>0.0000008</bias_stddev>
-                        </noise>
-                    </z>
-                </angular_velocity>
-                <linear_acceleration>
-                    <x>
-                        <noise type="gaussian">
-                            <mean>0.0</mean>
-                            <stddev>1.7e-2</stddev>
-                            <bias_mean>0.1</bias_mean>
-                            <bias_stddev>0.001</bias_stddev>
-                        </noise>
-                    </x>
-                    <y>
-                        <noise type="gaussian">
-                            <mean>0.0</mean>
-                            <stddev>1.7e-2</stddev>
-                            <bias_mean>0.1</bias_mean>
-                            <bias_stddev>0.001</bias_stddev>
-                        </noise>
-                    </y>
-                    <z>
-                        <noise type="gaussian">
-                            <mean>0.0</mean>
-                            <stddev>1.7e-2</stddev>
-                            <bias_mean>0.1</bias_mean>
-                            <bias_stddev>0.001</bias_stddev>
-                        </noise>
-                    </z>
-                </linear_acceleration>
-            </imu>
-        </sensor>
-    </gazebo>
+        <gazebo reference="${prefix}imu_link">
+            <sensor name="imu" type="imu">
+                <always_on>1</always_on>
+                <update_rate>100</update_rate>
+                <visualize>true</visualize>
+                <topic>${namespace}/imu_raw</topic>
+                <enable_metrics>true</enable_metrics>
+                <imu>
+                    <angular_velocity>
+                        <x>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>2e-4</stddev>
+                                <bias_mean>0.0000075</bias_mean>
+                                <bias_stddev>0.0000008</bias_stddev>
+                            </noise>
+                        </x>
+                        <y>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>2e-4</stddev>
+                                <bias_mean>0.0000075</bias_mean>
+                                <bias_stddev>0.0000008</bias_stddev>
+                            </noise>
+                        </y>
+                        <z>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>2e-4</stddev>
+                                <bias_mean>0.0000075</bias_mean>
+                                <bias_stddev>0.0000008</bias_stddev>
+                            </noise>
+                        </z>
+                    </angular_velocity>
+                    <linear_acceleration>
+                        <x>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>1.7e-2</stddev>
+                                <bias_mean>0.1</bias_mean>
+                                <bias_stddev>0.001</bias_stddev>
+                            </noise>
+                        </x>
+                        <y>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>1.7e-2</stddev>
+                                <bias_mean>0.1</bias_mean>
+                                <bias_stddev>0.001</bias_stddev>
+                            </noise>
+                        </y>
+                        <z>
+                            <noise type="gaussian">
+                                <mean>0.0</mean>
+                                <stddev>1.7e-2</stddev>
+                                <bias_mean>0.1</bias_mean>
+                                <bias_stddev>0.001</bias_stddev>
+                            </noise>
+                        </z>
+                    </linear_acceleration>
+                </imu>
+            </sensor>
+        </gazebo>
 
-    <gazebo reference="camera_link">
-        <sensor name="rgbd_camera" type="rgbd_camera">
-            <camera>
-                <horizontal_fov>1.2113</horizontal_fov>
-                <image>
-                    <width>640</width>
-                    <height>480</height>
-                </image>
-                <clip>
-                    <near>0.1</near>
-                    <far>100</far>
-                </clip>
-                <noise>
-                    <type>gaussian</type>
-                    <mean>0.0</mean>
-                    <stddev>0.02</stddev>
-                </noise>
-            </camera>
-            <always_on>1</always_on>
-            <update_rate>30</update_rate>
-            <visualize>true</visualize>
-            <topic>camera</topic>
-            <enable_metrics>true</enable_metrics>
-        </sensor>
-    </gazebo>
+        <gazebo reference="${prefix}camera_link">
+            <sensor name="rgbd_camera" type="rgbd_camera">
+                <camera>
+                    <horizontal_fov>1.2113</horizontal_fov>
+                    <image>
+                        <width>640</width>
+                        <height>480</height>
+                    </image>
+                    <clip>
+                        <near>0.1</near>
+                        <far>100</far>
+                    </clip>
+                    <noise>
+                        <type>gaussian</type>
+                        <mean>0.0</mean>
+                        <stddev>0.02</stddev>
+                    </noise>
+                </camera>
+                <always_on>1</always_on>
+                <update_rate>30</update_rate>
+                <visualize>true</visualize>
+                <topic>${namespace}/camera</topic>
+                <enable_metrics>true</enable_metrics>
+            </sensor>
+        </gazebo>
+    </xacro:macro>
 </robot>
