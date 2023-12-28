@@ -3,6 +3,7 @@ from os import environ
 from os import pathsep
 
 from launch import LaunchDescription
+from launch_ros.substitutions import FindPackageShare
 from launch.actions import ExecuteProcess, DeclareLaunchArgument, Shutdown, IncludeLaunchDescription, RegisterEventHandler, SetEnvironmentVariable, LogInfo
 from launch.event_handlers import OnProcessExit, OnProcessStart
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -13,16 +14,15 @@ from pathlib import Path
 
 def generate_launch_description():
     robot_name = DeclareLaunchArgument("robot_name", default_value="former")
-    world_name = DeclareLaunchArgument("world_name", default_value="default.sdf")
+    world_name = DeclareLaunchArgument("world_name", default_value="office_building.sdf")
+    tf_prefix = DeclareLaunchArgument("tf_prefix", default_value="")
 
     environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '1'
-    # package_path = get_package_share_directory('former_gazebo')
-    # gazebo_model_paths += pathsep + package_path + "/models"
+    resource_path = get_package_share_directory('former_description')
+    resource_path = resource_path[:len(resource_path) - len('former_description')]
 
-    model_path = get_package_share_directory('former_description')
-    model_path = model_path[:len(model_path) - len('former_description')]
-
-    environ['IGN_GAZEBO_RESOURCE_PATH'] = model_path
+    model_path = get_package_share_directory('former_gazebo')
+    environ['IGN_GAZEBO_RESOURCE_PATH'] = resource_path + pathsep + model_path + "/models"
 
     gz_sim = IncludeLaunchDescription(
         PythonLaunchDescriptionSource([
@@ -31,9 +31,13 @@ def generate_launch_description():
         ]),
         launch_arguments={
             "gz_args": [
-                '-r -v2',
+                '-r -v3',
                 ' ',
-                LaunchConfiguration('world_name')
+                PathJoinSubstitution([
+                    FindPackageShare('former_gazebo'),
+                    "worlds",
+                    LaunchConfiguration('world_name')]
+                )
             ]
         }.items()
     )
@@ -44,7 +48,8 @@ def generate_launch_description():
             '/launch/upload_robot.launch.py']
         ),
         launch_arguments = {
-            'use_gazebo_sim' : 'true'
+            'use_gazebo_sim' : 'true',
+            'tf_prefix': LaunchConfiguration('tf_prefix'),
         }.items()
     )
 
@@ -54,7 +59,9 @@ def generate_launch_description():
         output='both',
         arguments=[
             '-name', LaunchConfiguration('robot_name'),
-            '-topic', 'robot_description'
+            '-topic', 'robot_description',
+            '-x', '0.0',
+            '-y', '-1.0',
         ],
         parameters=[{
             "use_sim_time": True
@@ -111,6 +118,7 @@ def generate_launch_description():
     return LaunchDescription([
         robot_name,
         world_name,
+        tf_prefix,
         gz_bridge,
         upload_robot,
         gz_sim,

@@ -38,7 +38,7 @@ def generate_launch_description():
                 ),
                 launch_arguments = {
                     'use_gazebo_sim': 'false',
-                    'tf_prefix': [LaunchConfiguration('namespace'), "_"]
+                    'tf_prefix': LaunchConfiguration('tf_prefix'),
 
                 }.items()
             ),
