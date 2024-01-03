@@ -17,7 +17,7 @@
                 </hardware>
             </xacro:unless>
 
-            <joint name="${prefix}l_wheel_joint">
+            <joint name="l_wheel_joint">
                 <command_interface name="velocity">
                     <param name="min">-1</param>
                     <param name="max">1</param>
@@ -28,7 +28,7 @@
                 <state_interface name="effort"/>
             </joint>
 
-            <joint name="${prefix}r_wheel_joint">
+            <joint name="r_wheel_joint">
                 <command_interface name="velocity">
                     <param name="min">-1</param>
                     <param name="max">1</param>
@@ -40,7 +40,7 @@
             </joint>
 
             <xacro:unless value="$(arg use_gazebo_sim)">
-                <gpio name="${prefix}gpio">
+                <gpio name="gpio">
                     <command_interface name="set_enable_motor"/>
                     <state_interface name="motor_enabled"/>
                     <state_interface name="estop_button_state"/>

@@ -14,8 +14,8 @@ controller_manager:
 
 base_controller:
   ros__parameters:
-    left_wheel_names: ["$(var tf_prefix)l_wheel_joint"]
-    right_wheel_names: ["$(var tf_prefix)r_wheel_joint"]
+    left_wheel_names: ["l_wheel_joint"]
+    right_wheel_names: ["r_wheel_joint"]
     write_op_modes: ["motor_controller"]
 
     wheel_separation: 0.305
@@ -26,8 +26,8 @@ base_controller:
     left_wheel_radius_multiplier: 1.0
     right_wheel_radius_multiplier: 1.0
 
-    odom_frame_id: $(var tf_prefix)odom
-    base_frame_id: $(var tf_prefix)base_footprint
+    odom_frame_id: odom
+    base_frame_id: base_footprint
     pose_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
     twist_covariance_diagonal: [0.001, 0.001, 1000000.0, 1000000.0, 1000000.0, 1000.0]
 
