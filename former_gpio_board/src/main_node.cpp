@@ -120,7 +120,7 @@ class FormerGPIOBoardNode : public rclcpp::Node
 
                 auto dock_state_msg = std_msgs::msg::Bool();
                 dock_state_msg.data = recv_buf[7] == 0 ? false : true;
-                is_charging_ = dock_state_msg.data;
+                is_docking_ = dock_state_msg.data;
 
                 pub_l_sonar_range_->publish(l_sonar_msg);
                 pub_r_sonar_range_->publish(r_sonar_msg);
