@@ -39,6 +39,9 @@ class FormerGPIOBoardNode : public rclcpp::Node
             is_estop_pressed_ = false;
             watchdog_count_ = 0;
 
+            prev_lamp_color_ = 5;
+            prev_lamp_mode_ = 2;
+
             // open serial port, initialize
             try
             {
@@ -76,6 +79,8 @@ class FormerGPIOBoardNode : public rclcpp::Node
     private:
         void timer_callback()
         {
+            is_docking_ = false;
+
             try
             {
                 // ser_.FlushIOBuffers();
@@ -115,6 +120,7 @@ class FormerGPIOBoardNode : public rclcpp::Node
 
                 auto dock_state_msg = std_msgs::msg::Bool();
                 dock_state_msg.data = recv_buf[7] == 0 ? false : true;
+                is_charging_ = dock_state_msg.data;
 
                 pub_l_sonar_range_->publish(l_sonar_msg);
                 pub_r_sonar_range_->publish(r_sonar_msg);
@@ -129,6 +135,31 @@ class FormerGPIOBoardNode : public rclcpp::Node
                 return;
             }
             watchdog_count_ = 0;
+
+
+            if(is_docking_)
+            {
+                if(!is_charging_)
+                {
+                    prev_lamp_color_ = req_lamp_color_;
+                    prev_lamp_mode_ = req_lamp_mode_;
+
+                    req_lamp_color_ = 3;
+                    req_lamp_mode_ = 2;
+                    is_charging_ = true;
+                }
+            }
+            else
+            {
+                if(is_charging_)
+                {
+                    req_lamp_color_ = prev_lamp_color_;
+                    req_lamp_mode_ = prev_lamp_mode_;
+
+                    is_charging_ = false;
+                }
+            }
+
 
             if(req_lamp_color_ != feedback_lamp_color_)
             {
@@ -207,6 +238,12 @@ class FormerGPIOBoardNode : public rclcpp::Node
         int req_lamp_color_;
         int feedback_lamp_mode_;
         int req_lamp_mode_;
+
+
+        bool is_docking_;
+        bool is_charging_;
+        int prev_lamp_color_;
+        int prev_lamp_mode_;
 
         int last_lamp_color_;
         int last_lamp_mode_;
