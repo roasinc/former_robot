@@ -49,9 +49,9 @@ class FormerAutoDockingNode: public rclcpp::Node
             this->declare_parameter<double>("least_sq_angle_threshold", 0.0001);
             this->declare_parameter<double>("least_sq_radius_threshold", 0.0001);
             this->declare_parameter<double>("max_line_gap", 0.5);
-            this->declare_parameter<double>("mine_line_length", 0.1);
-            this->declare_parameter<double>("min_range", 0.5);
-            this->declare_parameter<double>("max_range", 250.0);
+            this->declare_parameter<double>("min_line_length", 0.1);
+            this->declare_parameter<double>("min_range", 0.3);
+            this->declare_parameter<double>("max_range", 2.0);
             this->declare_parameter<double>("min_split_distance", 0.03);
             this->declare_parameter<double>("outlier_distance", 0.06);
             this->declare_parameter<uint16_t>("min_line_points", 10);
@@ -62,7 +62,7 @@ class FormerAutoDockingNode: public rclcpp::Node
             line_extraction_.setLeastSqAngleThresh(this->get_parameter("least_sq_angle_threshold").get_parameter_value().get<double>());
             line_extraction_.setLeastSqRadiusThresh(this->get_parameter("least_sq_radius_threshold").get_parameter_value().get<double>());
             line_extraction_.setMaxLineGap(this->get_parameter("max_line_gap").get_parameter_value().get<double>());
-            line_extraction_.setMinLineLength(this->get_parameter("mine_line_length").get_parameter_value().get<double>());
+            line_extraction_.setMinLineLength(this->get_parameter("min_line_length").get_parameter_value().get<double>());
             line_extraction_.setMinRange(this->get_parameter("min_range").get_parameter_value().get<double>());
             line_extraction_.setMaxRange(this->get_parameter("max_range").get_parameter_value().get<double>());
             line_extraction_.setMinSplitDist(this->get_parameter("min_split_distance").get_parameter_value().get<double>());
@@ -293,7 +293,7 @@ class FormerAutoDockingNode: public rclcpp::Node
                                                                     tf2::getYaw(current_odom_.pose.pose.orientation));
                 auto rotate_dir = copysign(1.0, diff_heading);
 
-                while(rclcpp::ok() && abs(diff_heading) > 0.05)
+                while(rclcpp::ok() && abs(diff_heading) > 0.1)
                 {
                     diff_heading = angles::shortest_angular_distance(tf2::getYaw(goal_pose_odom.pose.orientation),
                                                                     tf2::getYaw(current_odom_.pose.pose.orientation));
