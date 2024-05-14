@@ -122,6 +122,8 @@ def generate_launch_description():
             'nodename:=front_lidar',
             'range_min:=0.05',
             'sw_pll_only_publish:=false',
+            'tf_base_frame_id:=lidar_mount',
+            'tf_base_lidar_xyz_rpy:=0,0,0.06,0,0,0'
         ],
         output={
             "stdout": "screen",
@@ -183,6 +185,19 @@ def generate_launch_description():
             "stdout": "screen",
             "stderr": "screen",
         }
+    )
+    realsense2_bringup = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource([
+            get_package_share_directory('realsense2_camera'),
+            '/launch/rs_launch.py']
+        ),
+        launch_arguments = {
+            'enable_sync': 'true',
+            'pointcloud.enable': 'true',
+            'decimation_filter.enable': 'true',
+            'depth_module.profile': '640,480,30',
+            'rgb_camera.profile': '640,480,30',
+        }.items()
     )
 
     joy_node = Node(
