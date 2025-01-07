@@ -50,7 +50,10 @@ $ colcon build --symlink-install
 Gazebo
 
 ```shell
-$ ros2 launch former_gazebo bringup.launch.py world_name:=office_building.world
+$ ros2 launch former_bringup bringup_robot_gazebo.launch.py
+$ ros2 launch former_gazebo bringup_gazebo.launch.py world_name:=office_building.sdf
+$ ros2 run teleop_twist_keyboard teleop_twist_keyboard cmd_vel:=base_controller/cmd_vel_unstamped
+
 ```
 
 Robot
